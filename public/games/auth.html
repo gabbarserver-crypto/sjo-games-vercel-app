@@ -75,6 +75,14 @@ function redirectTarget(){
   return params.get('redirect') || 'index.html';
 }
 
+// Directory this file lives in (e.g. "/games/"), independent of which
+// domain/subpath it's deployed under. window.location.origin alone isn't
+// enough here because auth.html sits inside /games/, so origin-only
+// redirects were dropping that folder and landing on a 404.
+function currentDir(){
+  return window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+}
+
 // If the portal handed off a session (see openGames() in Login.jsx), adopt
 // it immediately instead of showing the login form.
 async function tryHandoff(){
@@ -136,7 +144,7 @@ googleBtn.addEventListener('click', async () => {
   clearNotices();
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin + '/' + redirectTarget() }
+    options: { redirectTo: currentDir() + redirectTarget() }
   });
   if (error) showError(error.message);
 });

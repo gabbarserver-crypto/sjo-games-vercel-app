@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#111827">
+<title>SJO Sudoku</title>
+<style>
+:root{--ink:#111827;--muted:#7b8498;--soft:#f5f7fb;--line:#dce2ec;--accent:#3157d5;--accent2:#e8edff;--danger:#d64545}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#eef2ff 0,#f7f8fc 34%,#f7f8fc 100%);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink)}
+.app{max-width:560px;margin:auto;min-height:100vh;padding:18px 15px 30px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.brand{display:flex;gap:11px;align-items:center}.logo{width:43px;height:43px;border-radius:14px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:22px;box-shadow:0 8px 20px #11182725}
+h1{font-size:21px;margin:0;letter-spacing:-.4px}.sub{font-size:12px;color:var(--muted);margin-top:2px}
+.iconbtn{width:43px;height:43px;border:1px solid #e2e6ef;background:#fff;border-radius:14px;font-size:18px;box-shadow:0 5px 16px #1118270c}
+.hero{background:var(--ink);color:#fff;border-radius:24px;padding:18px;margin-bottom:14px;box-shadow:0 14px 30px #11182725}
+.heroTop{display:flex;justify-content:space-between;align-items:center}.eyebrow{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;opacity:.65}.hero h2{margin:4px 0 0;font-size:23px}.difficulty{background:#ffffff18;border:1px solid #ffffff25;color:#fff;padding:8px 10px;border-radius:10px;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}.stat{background:#ffffff0e;border:1px solid #ffffff15;border-radius:14px;padding:9px 7px;text-align:center}.stat b{display:block;font-size:18px}.stat span{font-size:10px;opacity:.62}
+.card{background:#fff;border:1px solid #e7eaf1;border-radius:24px;padding:13px;box-shadow:0 12px 35px #1118270b}
+.modes{display:flex;gap:7px;background:#f3f5f9;padding:5px;border-radius:14px;margin-bottom:13px}.modes button{flex:1;border:0;background:transparent;border-radius:10px;padding:9px 5px;font-size:12px;font-weight:750;color:#778095}.modes button.active{background:#fff;color:var(--ink);box-shadow:0 2px 8px #11182712}
+#board{width:min(94vw,500px);aspect-ratio:1;margin:auto;display:grid;grid-template-columns:repeat(9,1fr);border:2px solid var(--ink);border-radius:13px;overflow:hidden;background:#fff}
+.cell{position:relative;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;place-items:center;font-size:clamp(19px,6.2vw,30px);font-weight:720;cursor:pointer;user-select:none}
+.cell:nth-child(3n){border-right:2px solid var(--ink)}.cell:nth-child(9n){border-right:0}
+.cell:nth-child(n+19):nth-child(-n+27),.cell:nth-child(n+46):nth-child(-n+54){border-bottom:2px solid var(--ink)}
+.cell.given{background:#f3f5f9}.cell.selected{background:var(--accent2)}.cell.related{background:#f7f8fd}.cell.same{background:#dfe7ff;color:#2146b8}.cell.error{background:#ffe9e9;color:var(--danger)}
+.cell .corner{position:absolute;top:3px;right:4px;font-size:8px;color:#c8ced9}
+.message{height:24px;text-align:center;color:var(--muted);font-size:12px;padding-top:9px}
+.keypad{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:14px}.keypad button{border:1px solid #e2e6ef;background:#f7f8fb;border-radius:13px;height:47px;font-size:18px;font-weight:750;color:var(--ink)}.keypad button:active{transform:scale(.96)}.keypad .erase{font-size:17px;background:#fff0f0;color:var(--danger)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.actions button{height:45px;border:0;border-radius:13px;font-weight:800}.check{background:var(--ink);color:#fff}.hint{background:#edf1ff;color:#2749bd}
+.bottom{display:flex;gap:8px;margin-top:12px}.bottom button{flex:1;height:42px;border:1px solid #e0e5ee;background:#fff;border-radius:13px;font-weight:700;color:#5f687c}
+.overlay{position:fixed;inset:0;background:#11182799;display:none;align-items:flex-end;justify-content:center;padding:14px;z-index:5}.modal{width:min(520px,100%);background:#fff;border-radius:25px;padding:25px;text-align:center;box-shadow:0 -8px 40px #0003}.trophy{font-size:44px}.modal h2{margin:7px 0;font-size:25px}.modal p{color:var(--muted);margin:0 0 18px}.modal button{width:100%;height:48px;border:0;border-radius:14px;background:var(--ink);color:#fff;font-weight:800}
+@media(min-width:560px){.app{padding-top:28px}.keypad button{height:50px}}
+</style>
+
+<style id="sjo-nav">
+#sjoNav{position:sticky;top:0;z-index:9999;display:flex;justify-content:space-between;align-items:center;
+padding:9px 12px;background:#111827;color:#fff;font:700 13px system-ui;border-radius:0 0 14px 14px;box-shadow:0 5px 18px #11182722}
+#sjoNav a{color:#fff;text-decoration:none;background:#ffffff18;border:1px solid #ffffff25;padding:7px 10px;border-radius:9px}
+</style>
+</head>
+<body><nav id="sjoNav"><span>🎮 SJO Games</span><a href="index.html">⌂ Games</a></nav>
+<div class="app">
+<header>
+<div class="brand"><div class="logo">🧩</div><div><h1>SJO Sudoku</h1><div class="sub">Focus. Solve. Repeat.</div></div></div>
+<button class="iconbtn" onclick="newGame()" title="New game">↻</button>
+</header>
+
+<section class="hero">
+<div class="heroTop"><div><div class="eyebrow">Daily brain workout</div><h2>Ready to solve?</h2></div><select id="difficulty" class="difficulty" onchange="setDifficulty(this.value)"><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select></div>
+<div class="stats"><div class="stat"><b id="time">00:00</b><span>TIME</span></div><div class="stat"><b id="mistakes">0</b><span>MISTAKES</span></div><div class="stat"><b id="best">--:--</b><span>BEST</span></div></div>
+</section>
+
+<section class="card">
+<div class="modes"><button class="active" onclick="modeMsg(this,'Classic Sudoku')">Classic</button><button onclick="modeMsg(this,'Daily mode coming soon')">Daily</button><button onclick="modeMsg(this,'Challenge mode coming soon')">Challenge</button></div>
+<div id="board"></div>
+<div class="message" id="message">Tap an empty cell to start.</div>
+<div class="keypad">
+<button onclick="inputNum(1)">1</button><button onclick="inputNum(2)">2</button><button onclick="inputNum(3)">3</button><button onclick="inputNum(4)">4</button><button onclick="inputNum(5)">5</button>
+<button onclick="inputNum(6)">6</button><button onclick="inputNum(7)">7</button><button onclick="inputNum(8)">8</button><button onclick="inputNum(9)">9</button><button class="erase" onclick="inputNum(0)">⌫</button>
+</div>
+<div class="actions"><button class="check" onclick="checkBoard()">Check board</button><button class="hint" onclick="giveHint()">💡 Hint</button></div>
+<div class="bottom"><button onclick="clearSelected()">Clear</button><button onclick="newGame()">New puzzle</button></div>
+</section>
+</div>
+
+<div class="overlay" id="win"><div class="modal"><div class="trophy">🏆</div><h2>Puzzle solved!</h2><p id="winText"></p><button onclick="document.getElementById('win').style.display='none';newGame()">Play another</button></div></div>
+
+<script src="sjo-core.js"></script>
+<script>
+let solution=[],puzzle=[],board=[],selected=-1,difficulty='easy',mistakes=0,seconds=0,timer=null;
+const givens={easy:41,medium:33,hard:27};
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function makeSolution(){let base=[];for(let r=0;r<9;r++){base[r]=[];for(let c=0;c<9;c++)base[r][c]=(r*3+Math.floor(r/3)+c)%9+1}let nums=shuffle([1,2,3,4,5,6,7,8,9]),rows=shuffle([0,1,2]).flatMap(b=>shuffle([0,1,2]).map(x=>b*3+x)),cols=shuffle([0,1,2]).flatMap(b=>shuffle([0,1,2]).map(x=>b*3+x));return rows.map(r=>cols.map(c=>nums[base[r][c]-1]))}
+function flat(){return solution.flat()}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function updateBest(){let b=localStorage.getItem('sjoBest_'+difficulty);document.getElementById('best').textContent=b?fmt(+b):'--:--'}
+function newGame(){clearInterval(timer);solution=makeSolution();puzzle=solution.flat();let ids=shuffle([...Array(81).keys()]);for(let i=0;i<81-givens[difficulty];i++)puzzle[ids[i]]=0;board=[...puzzle];selected=-1;mistakes=0;seconds=0;document.getElementById('mistakes').textContent='0';document.getElementById('time').textContent='00:00';document.getElementById('message').textContent='Tap an empty cell to start.';updateBest();render();timer=setInterval(()=>{seconds++;document.getElementById('time').textContent=fmt(seconds)},1000)}
+function render(){let el=document.getElementById('board');el.innerHTML='';let sol=flat();for(let i=0;i<81;i++){let d=document.createElement('div');d.className='cell';if(puzzle[i])d.classList.add('given');if(i===selected)d.classList.add('selected');if(selected>=0){let sr=Math.floor(selected/9),sc=selected%9,r=Math.floor(i/9),c=i%9;if(r===sr||c===sc||Math.floor(r/3)===Math.floor(sr/3)&&Math.floor(c/3)===Math.floor(sc/3))d.classList.add('related');if(board[i]&&board[i]===board[selected])d.classList.add('same')}if(!puzzle[i]&&board[i]&&board[i]!==sol[i])d.classList.add('error');d.textContent=board[i]||'';d.onclick=()=>{if(!puzzle[i]){selected=i;render()}};el.appendChild(d)}}
+function inputNum(n){if(selected<0||puzzle[selected])return;if(n===0){board[selected]=0;document.getElementById('message').textContent='Entry cleared.';render();return}board[selected]=n;if(n!==flat()[selected]){mistakes++;document.getElementById('mistakes').textContent=mistakes;document.getElementById('message').textContent='Check that number and try again.'}else document.getElementById('message').textContent='Nice move!';render();if(board.every((v,i)=>v===flat()[i]))win()}
+function clearSelected(){if(selected>=0&&!puzzle[selected]){board[selected]=0;render()}}
+function checkBoard(){let wrong=0;board.forEach((v,i)=>{if(!puzzle[i]&&v&&v!==flat()[i])wrong++});document.getElementById('message').textContent=wrong?wrong+' incorrect '+(wrong===1?'entry':'entries')+' found.':'Everything entered is correct so far!'}
+function giveHint(){let choices=[];for(let i=0;i<81;i++)if(!puzzle[i]&&board[i]!==flat()[i])choices.push(i);if(!choices.length)return;let i=choices[Math.floor(Math.random()*choices.length)];selected=i;board[i]=flat()[i];document.getElementById('message').textContent='💡 Hint added.';render();if(board.every((v,j)=>v===flat()[j]))win()}
+function win(){clearInterval(timer);let key='sjoBest_'+difficulty,b=localStorage.getItem(key);if(!b||seconds<+b)localStorage.setItem(key,seconds);updateBest();document.getElementById('winText').textContent='You finished in '+fmt(seconds)+' with '+mistakes+' mistakes.';document.getElementById('win').style.display='flex';window.SJO.record('win',Math.max(100,1000-seconds*5),{difficulty,seconds,mistakes});window.SJOGamesV9&&window.SJOGamesV9.record('Sudoku','win',Math.max(100,1000-seconds*5))}
+function setDifficulty(v){difficulty=v;newGame()}
+function modeMsg(btn,msg){document.querySelectorAll('.modes button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('message').textContent=msg}
+document.addEventListener('keydown',e=>{if(e.key>='1'&&e.key<='9')inputNum(+e.key);if(e.key==='Backspace'||e.key==='0')inputNum(0)});
+newGame();
+</script>
+<script src="sjo-v7-enhancements.js"></script>
+<script src="sjo-v8-offline.js"></script>
+<script src="sjo-v9-advanced-offline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="sjo-supabase-sync.js"></script>
+</body>
+</html>

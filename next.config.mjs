@@ -6,6 +6,15 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/games/index.html',
+        permanent: false,
+      },
+    ]
+  },
 }
 
 export default nextConfig

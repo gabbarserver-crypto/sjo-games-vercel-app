@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>SJO Bubble Shooter</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef2ff;font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#111827}
+.app{max-width:560px;margin:auto;min-height:100vh;padding:16px 14px 28px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.brand{display:flex;gap:10px;align-items:center}.logo{width:44px;height:44px;border-radius:14px;background:#111827;color:#fff;display:grid;place-items:center;font-size:21px}
+h1{font-size:21px;margin:0}.sub{font-size:12px;color:#7b8497}
+.icon{width:43px;height:43px;border:1px solid #e0e5ee;background:#fff;border-radius:13px;font-size:19px}
+.hero{background:#111827;color:#fff;border-radius:23px;padding:16px;margin-bottom:13px}
+.heroTop{display:flex;justify-content:space-between;align-items:center}.eyebrow{text-transform:uppercase;letter-spacing:1.2px;font-size:10px;opacity:.6}.hero h2{margin:3px 0 0;font-size:22px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}.stat{background:#ffffff10;border:1px solid #ffffff16;border-radius:13px;padding:8px;text-align:center}.stat b{display:block;font-size:18px}.stat span{font-size:10px;opacity:.6}
+.card{background:#fff;border:1px solid #e4e8f0;border-radius:23px;padding:10px;box-shadow:0 12px 34px #1118270d}
+#wrap{position:relative;width:min(94vw,500px);margin:auto;aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:linear-gradient(#cfd7ff,#eef1ff 68%,#fff)}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.controls{display:flex;gap:8px;margin-top:10px}.controls button{flex:1;border:0;border-radius:13px;padding:12px;font-weight:800;background:#eef1f7;color:#273246}.controls .new{background:#111827;color:#fff}
+.message{text-align:center;min-height:21px;padding-top:9px;font-size:12px;color:#687286}
+.overlay{position:fixed;inset:0;background:#11182799;display:none;align-items:flex-end;padding:14px}.modal{width:min(530px,100%);background:#fff;border-radius:25px;padding:25px;text-align:center}.emoji{font-size:44px}.modal h2{margin:6px}.modal p{color:#667085}.modal button{width:100%;border:0;border-radius:14px;padding:13px;background:#111827;color:#fff;font-weight:800}
+.help{font-size:11px;color:#8a92a2;text-align:center;margin-top:8px}
+</style>
+
+<style id="sjo-nav">
+#sjoNav{position:sticky;top:0;z-index:9999;display:flex;justify-content:space-between;align-items:center;
+padding:9px 12px;background:#111827;color:#fff;font:700 13px system-ui;border-radius:0 0 14px 14px;box-shadow:0 5px 18px #11182722}
+#sjoNav a{color:#fff;text-decoration:none;background:#ffffff18;border:1px solid #ffffff25;padding:7px 10px;border-radius:9px}
+</style>
+</head>
+<body><nav id="sjoNav"><span>🎮 SJO Games</span><a href="index.html">⌂ Games</a></nav>
+<div class="app">
+<header>
+<div class="brand"><div class="logo">🫧</div><div><h1>SJO Bubble Shooter</h1><div class="sub">Aim • Match • Pop</div></div></div>
+<button class="icon" onclick="newGame()">↻</button>
+</header>
+
+<section class="hero">
+<div class="heroTop"><div><div class="eyebrow">Puzzle game</div><h2>Clear the bubbles</h2></div><div style="font-size:26px">🎯</div></div>
+<div class="stats"><div class="stat"><b id="score">0</b><span>SCORE</span></div><div class="stat"><b id="level">1</b><span>LEVEL</span></div><div class="stat"><b id="best">0</b><span>BEST</span></div></div>
+</section>
+
+<section class="card">
+<div id="wrap"><canvas id="game"></canvas></div>
+<div class="message" id="message">Drag to aim and release to shoot.</div>
+<div class="controls"><button onclick="swapColor()">↔ Next</button><button class="new" onclick="newGame()">New Game</button></div>
+<div class="help">Match 3+ same-color bubbles to pop them. Clear the ceiling to win.</div>
+</section>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal">
+<div class="emoji" id="emoji">🏆</div><h2 id="title">Level Clear!</h2><p id="result"></p>
+<button onclick="document.getElementById('overlay').style.display='none';newGame()">Play Again</button>
+</div></div>
+
+<script src="sjo-core.js"></script>
+<script>
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+let W=0,H=0,D=1,R=18,grid=[],current,next,aimX,aimY,score=0,level=1,best=+localStorage.getItem('sjoBubbleBest')||0,gameOver=false,animating=false;
+const colors=['#ef4444','#22c55e','#3b82f6','#facc15','#a855f7','#06b6d4'];
+function resize(){D=devicePixelRatio||1;W=canvas.clientWidth;H=canvas.clientHeight;canvas.width=W*D;canvas.height=H*D;ctx.setTransform(D,0,0,D,0,0);R=Math.min(19,W/22);draw()}
+window.addEventListener('resize',resize);
+function randColor(){return colors[Math.floor(Math.random()*Math.min(colors.length,4+Math.floor(level/3)))]}
+function newGame(){score=0;level=1;gameOver=false;animating=false;grid=[];for(let r=0;r<7;r++){grid[r]=[];for(let c=0;c<10;c++)grid[r][c]=randColor()}current=randColor();next=randColor();update();resize();msg('Drag to aim and release to shoot.')}
+function update(){document.getElementById('score').textContent=score;document.getElementById('level').textContent=level;document.getElementById('best').textContent=best}
+function msg(t){document.getElementById('message').textContent=t}
+function pos(r,c){let off=r%2?R:0;return{x:R+c*R*2+off,y:R+r*R*1.73}}
+function bubbleAt(x,y){for(let r=0;r<grid.length;r++)for(let c=0;c<10;c++)if(grid[r]&&grid[r][c]){let p=pos(r,c);if(Math.hypot(x-p.x,y-p.y)<R*1.05)return[r,c]}return null}
+function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle='#dfe5ff';ctx.fillRect(0,0,W,H);for(let r=0;r<grid.length;r++)for(let c=0;c<10;c++)if(grid[r]&&grid[r][c])drawBubble(...Object.values(pos(r,c)),grid[r][c]);let sx=W/2,sy=H-45;drawBubble(sx,sy,current);ctx.strokeStyle='#ffffff99';ctx.setLineDash([5,6]);ctx.beginPath();ctx.moveTo(sx,sy);let ax=aimX??sx,ay=aimY??H*.28;ctx.lineTo(ax,Math.min(ay,H-90));ctx.stroke();ctx.setLineDash([]);drawBubble(W-42,H-43,next);ctx.fillStyle='#667085';ctx.font='11px system-ui';ctx.textAlign='center';ctx.fillText('NEXT',W-42,H-15)}
+function drawBubble(x,y,col){let g=ctx.createRadialGradient(x-R*.35,y-R*.4,R*.1,x,y,R);g.addColorStop(0,'#fff');g.addColorStop(.18,col);g.addColorStop(1,'#00000035');ctx.beginPath();ctx.fillStyle=g;ctx.arc(x,y,R,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#00000018';ctx.stroke()}
+function setAim(x,y){aimX=x;aimY=y;draw()}
+canvas.addEventListener('pointermove',e=>{let q=canvas.getBoundingClientRect();setAim(e.clientX-q.left,e.clientY-q.top)});
+canvas.addEventListener('pointerdown',e=>{let q=canvas.getBoundingClientRect();setAim(e.clientX-q.left,e.clientY-q.top)});
+canvas.addEventListener('pointerup',()=>shoot());
+function shoot(){if(gameOver||animating)return;let sx=W/2,sy=H-45,ax=aimX??sx,ay=aimY??H*.25;if(ay>sy-25)return;animating=true;let ang=Math.atan2(ay-sy,ax-sx);let x=sx,y=sy,steps=0;let hit=null;while(steps++<180){x+=Math.cos(ang)*5;y+=Math.sin(ang)*5;if(x<R||x>W-R){ang=Math.PI-ang;x+=Math.cos(ang)*2}hit=bubbleAt(x,y);if(hit||y<R+8)break}let row=0,col=Math.max(0,Math.min(9,Math.round((x-R-(row%2?R:0))/(2*R))));if(hit){row=hit[0];col=hit[1];if(x>pos(row,col).x)col=Math.min(9,col+1)}while(row<grid.length&&grid[row][col])row++;if(row>=grid.length){grid.push(Array(10).fill(null));row=grid.length-1}grid[row][col]=current;let cluster=clusterAt(row,col,current);if(cluster.length>=3){cluster.forEach(([r,c])=>grid[r][c]=null);score+=cluster.length*20;let floating=dropFloating();score+=floating*30;msg('Pop! +'+(cluster.length*20+floating*30));}else{msg('Nice shot. Match 3 bubbles to pop.')}if(score>best){best=score;localStorage.setItem('sjoBubbleBest',best)}current=next;next=randColor();animating=false;checkState();update();draw()}
+function neighbors(r,c){let a=[[r,c-1],[r,c+1],[r-1,c],[r+1,c]];if(r%2)a.push([r-1,c+1],[r+1,c+1]);else a.push([r-1,c-1],[r+1,c-1]);return a.filter(([rr,cc])=>rr>=0&&rr<grid.length&&cc>=0&&cc<10)}
+function clusterAt(r,c,col){let out=[],seen=new Set(),q=[[r,c]];while(q.length){let [rr,cc]=q.pop(),k=rr+','+cc;if(seen.has(k)||!grid[rr]||grid[rr][cc]!==col)continue;seen.add(k);out.push([rr,cc]);q.push(...neighbors(rr,cc))}return out}
+function dropFloating(){let seen=new Set(),q=[];for(let c=0;c<10;c++)if(grid[0]&&grid[0][c])q.push([0,c]);while(q.length){let [r,c]=q.pop(),k=r+','+c;if(seen.has(k)||!grid[r]||!grid[r][c])continue;seen.add(k);q.push(...neighbors(r,c))}let n=0;for(let r=0;r<grid.length;r++)for(let c=0;c<10;c++)if(grid[r][c]&&!seen.has(r+','+c)){grid[r][c]=null;n++}return n}
+function checkState(){let any=grid.some(row=>row&&row.some(Boolean));if(!any){level++;score+=500;window.SJO.record('win',score,{level,clearedLevel:level-1});window.SJOGamesV9&&window.SJOGamesV9.record('Bubble Shooter','win',score);document.getElementById('title').textContent='Level Clear!';document.getElementById('emoji').textContent='🏆';document.getElementById('result').textContent='Amazing! Bonus +500. Starting the next level.';document.getElementById('overlay').style.display='flex';setTimeout(()=>{if(!gameOver){grid=[];for(let r=0;r<Math.min(7+level,11);r++){grid[r]=[];for(let c=0;c<10;c++)grid[r][c]=randColor()}current=randColor();next=randColor();update();draw()}},900)}}
+function swapColor(){[current,next]=[next,current];draw();msg('Bubble swapped. Aim carefully.')}
+newGame();
+</script>
+<script src="sjo-v8-offline.js"></script>
+<script src="sjo-v9-advanced-offline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="sjo-supabase-sync.js"></script>
+</body></html>

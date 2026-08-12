@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>SJO Teen Patti</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#081b18;color:#fff;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+.app{max-width:560px;margin:auto;min-height:100vh;padding:15px 13px 28px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.brand{display:flex;gap:10px;align-items:center}.logo{width:44px;height:44px;border-radius:14px;background:#d8a62a;color:#071b17;display:grid;place-items:center;font-size:22px;font-weight:900}.brand h1{font-size:21px;margin:0}.sub{font-size:12px;color:#b7c5bf}
+.icon{width:43px;height:43px;border:1px solid #31534b;background:#102c27;color:#fff;border-radius:13px;font-size:19px}
+.table{background:radial-gradient(circle at 50% 35%,#19704e,#0b4b39 52%,#063027);border:7px solid #c59528;border-radius:30px;padding:14px;box-shadow:0 15px 40px #0008}
+.top{display:flex;justify-content:space-between;align-items:center}.pot{background:#071b17aa;border:1px solid #ffffff25;border-radius:14px;padding:8px 12px;text-align:center}.pot b{display:block;font-size:20px;color:#ffd95d}.pot span{font-size:10px;color:#b9c8c1}
+.player{text-align:center;padding:10px}.avatar{width:44px;height:44px;margin:auto;border-radius:50%;display:grid;place-items:center;background:#f2c94c;color:#17362d;font-size:21px}.name{font-weight:800;margin-top:4px}.small{font-size:10px;color:#b9c8c1}
+.cards{display:flex;justify-content:center;gap:8px;margin:12px 0}.card{width:66px;height:92px;border-radius:9px;background:#fff;color:#111;display:flex;flex-direction:column;justify-content:space-between;padding:6px;font-weight:900;box-shadow:0 5px 10px #0005}.card.red{color:#d22}.card .mid{font-size:25px;text-align:center}.back{background:repeating-linear-gradient(45deg,#183c83,#183c83 5px,#294e9b 5px,#294e9b 10px);color:#fff;border:2px solid #d6b13a;display:grid;place-items:center;font-size:25px}
+.info{text-align:center;min-height:22px;font-size:12px;color:#dce8e3}.handLabel{text-align:center;color:#dce8e3;font-size:12px;margin:8px}
+.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}.controls button{border:0;border-radius:13px;padding:12px 6px;font-weight:900;background:#d8a62a;color:#10241f}.controls button.secondary{background:#14352f;color:#fff;border:1px solid #31584f}.controls button:disabled{opacity:.4}
+.bar{display:flex;justify-content:space-between;align-items:center;margin:12px 2px 0;font-size:12px;color:#c6d4cf}.chips{font-weight:900;color:#ffd95d}
+.notice{text-align:center;font-size:10px;color:#91a69e;margin-top:9px}
+.overlay{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;padding:14px}.modal{width:min(530px,100%);background:#fff;color:#14231f;border-radius:25px;padding:25px;text-align:center}.emoji{font-size:44px}.modal h2{margin:6px}.modal p{color:#66756f}.modal button{width:100%;border:0;border-radius:14px;padding:13px;background:#102b24;color:#fff;font-weight:800}
+</style>
+
+<style id="sjo-nav">
+#sjoNav{position:sticky;top:0;z-index:9999;display:flex;justify-content:space-between;align-items:center;
+padding:9px 12px;background:#111827;color:#fff;font:700 13px system-ui;border-radius:0 0 14px 14px;box-shadow:0 5px 18px #11182722}
+#sjoNav a{color:#fff;text-decoration:none;background:#ffffff18;border:1px solid #ffffff25;padding:7px 10px;border-radius:9px}
+</style>
+</head>
+<body><nav id="sjoNav"><span>🎮 SJO Games</span><a href="index.html">⌂ Games</a></nav>
+<div class="app">
+<header><div class="brand"><div class="logo">♠</div><div><h1>SJO Teen Patti</h1><div class="sub">Free • Offline • Virtual chips</div></div></div><button class="icon" onclick="newGame()">↻</button></header>
+
+<section class="table">
+<div class="top"><div class="player"><div class="avatar">🤖</div><div class="name">Computer</div><div class="small">Opponent</div></div><div class="pot"><b id="pot">30</b><span>FREE CHIPS POT</span></div></div>
+
+<div class="cards" id="cpuCards"><div class="card back">★</div><div class="card back">★</div><div class="card back">★</div></div>
+<div class="info" id="info">Your turn — Call, Show or Fold.</div>
+
+<div class="handLabel">YOUR CARDS</div>
+<div class="cards" id="myCards"></div>
+
+<div class="controls">
+<button id="fold" onclick="fold()">Fold</button>
+<button id="call" onclick="call()">Call</button>
+<button id="show" onclick="showdown()">Show</button>
+</div>
+<div class="bar"><span>Free chips: <span class="chips" id="chips">1000</span></span><span>Round: <span id="round">1</span></span></div>
+</section>
+<div class="notice">Entertainment only. No deposits, withdrawals, betting, or real-money rewards.</div>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal"><div class="emoji" id="emoji">🏆</div><h2 id="resultTitle">You win!</h2><p id="resultText"></p><button onclick="document.getElementById('overlay').style.display='none';newGame()">Next Round</button></div></div>
+
+<script src="sjo-core.js"></script>
+<script>
+const suits=['♠','♥','♦','♣'];
+const ranks=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+let deck=[],my=[],cpu=[],pot=0,round=1,chips=1000,over=false,hasCalled=false;
+
+function rankValue(r){return ranks.indexOf(r)+2}
+function newDeck(){
+  const d=[];
+  for(const s of suits) for(const r of ranks) d.push({s,r});
+  for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]]}
+  return d;
+}
+function evaluate(hand){
+  const vals=hand.map(c=>rankValue(c.r)).sort((a,b)=>a-b);
+  const flush=hand.every(c=>c.s===hand[0].s);
+  const uniq=[...new Set(vals)];
+  let straight=false, straightHigh=0;
+  if(uniq.length===3){
+    if(uniq[2]-uniq[0]===2){straight=true;straightHigh=uniq[2]}
+    else if(uniq.join(',')==='2,3,14'){straight=true;straightHigh=3}
+  }
+  const counts={};
+  vals.forEach(v=>counts[v]=(counts[v]||0)+1);
+  const groups=Object.entries(counts).map(([v,n])=>[n,+v]).sort((a,b)=>b[0]-a[0]||b[1]-a[1]);
+
+  // Teen Patti ranking:
+  // 6 Pure Sequence, 5 Trail, 4 Sequence, 3 Color, 2 Pair, 1 High Card
+  if(flush && straight) return {cat:6, name:'Pure Sequence', tie:[straightHigh]};
+  if(groups[0][0]===3) return {cat:5, name:'Trail', tie:[groups[0][1]]};
+  if(straight) return {cat:4, name:'Sequence', tie:[straightHigh]};
+  if(flush) return {cat:3, name:'Color', tie:vals.slice().sort((a,b)=>b-a)};
+  if(groups[0][0]===2){
+    const pair=groups.find(g=>g[0]===2)[1];
+    const kicker=groups.find(g=>g[0]===1)[1];
+    return {cat:2, name:'Pair', tie:[pair,kicker]};
+  }
+  return {cat:1, name:'High Card', tie:vals.slice().sort((a,b)=>b-a)};
+}
+function compare(a,b){
+  if(a.cat!==b.cat) return a.cat>b.cat?1:-1;
+  for(let i=0;i<Math.max(a.tie.length,b.tie.length);i++){
+    const x=a.tie[i]||0,y=b.tie[i]||0;
+    if(x!==y)return x>y?1:-1;
+  }
+  return 0;
+}
+function cardEl(c){
+  const d=document.createElement('div');
+  d.className='card '+((c.s==='♥'||c.s==='♦')?'red':'');
+  d.innerHTML='<div>'+c.r+c.s+'</div><div class="mid">'+c.s+'</div><div style="text-align:right">'+c.r+'</div>';
+  return d;
+}
+function render(){
+  const m=document.getElementById('myCards');m.innerHTML='';
+  my.forEach(c=>m.appendChild(cardEl(c)));
+  document.getElementById('pot').textContent=pot;
+  document.getElementById('chips').textContent=chips;
+  document.getElementById('round').textContent=round;
+}
+function setInfo(t){document.getElementById('info').textContent=t}
+function setButtons(enabled){
+  ['fold','call','show'].forEach(id=>document.getElementById(id).disabled=!enabled);
+}
+function newGame(){
+  deck=newDeck();
+  my=[deck.pop(),deck.pop(),deck.pop()];
+  cpu=[deck.pop(),deck.pop(),deck.pop()];
+  pot=30; over=false; hasCalled=false;
+  document.getElementById('cpuCards').innerHTML='<div class="card back">★</div><div class="card back">★</div><div class="card back">★</div>';
+  setButtons(true);
+  setInfo('Your turn — Call or Show.');
+  render();
+}
+function finish(result,title,text){
+  over=true;
+  window.SJO.record(result===1?'win':result===-1?'loss':'draw', result===1?pot:0, {pot,chips});
+  window.SJOGamesV9&&window.SJOGamesV9.record('Teen Patti', result===1?'win':result===-1?'loss':'draw', result===1?pot:0);
+  if(result===1) chips+=pot;
+  else if(result===-1) chips=Math.max(0,chips-15);
+  document.getElementById('emoji').textContent=result===1?'🏆':result===0?'🤝':'😄';
+  document.getElementById('resultTitle').textContent=title;
+  document.getElementById('resultText').textContent=text+' Free chips balance: '+chips+'.';
+  document.getElementById('overlay').style.display='flex';
+  setButtons(false);
+  render();
+}
+function fold(){if(over)return;finish(-1,'You folded','Computer wins the free-chip pot.')}
+function call(){
+  if(over||hasCalled)return;
+  if(chips<20){setInfo('Not enough free chips to call.');return}
+  chips-=20;pot+=20;hasCalled=true;
+  setInfo('You called. Now choose Show to reveal the cards.');
+  document.getElementById('call').disabled=true;
+  render();
+}
+function showdown(){
+  if(over)return;
+  const a=evaluate(my),b=evaluate(cpu),cmp=compare(a,b);
+  document.getElementById('cpuCards').innerHTML='';
+  cpu.forEach(c=>document.getElementById('cpuCards').appendChild(cardEl(c)));
+  const detail='You: '+a.name+' • Computer: '+b.name;
+  setInfo(detail);
+  if(cmp>0) finish(1,'You win! '+a.name,detail);
+  else if(cmp<0) finish(-1,'Computer wins',detail);
+  else finish(0,'Tie game',detail+' Both hands have equal value.');
+}
+newGame();
+</script>
+<script src="sjo-v8-offline.js"></script>
+<script src="sjo-v9-advanced-offline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="sjo-supabase-sync.js"></script>
+</body>
+</html>

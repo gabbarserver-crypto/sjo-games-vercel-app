@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Sudoku",
+    "icon": "🧩",
+    "category": "Logic Grid",
+    "file": "sudoku.html",
+    "offline": true
+  },
+  {
+    "name": "Tic-Tac-Toe",
+    "icon": "❌⭕",
+    "category": "Classic Duel",
+    "file": "tic-tac-toe.html",
+    "offline": true
+  },
+  {
+    "name": "Art Block Puzzle",
+    "icon": "🎨",
+    "category": "Block Puzzle",
+    "file": "art-block-puzzle.html",
+    "offline": true
+  },
+  {
+    "name": "Ludo",
+    "icon": "🎲",
+    "category": "Board Race",
+    "file": "ludo.html",
+    "offline": true
+  },
+  {
+    "name": "Bubble Shooter",
+    "icon": "🫧",
+    "category": "Match 3",
+    "file": "bubble-shooter.html",
+    "offline": true
+  },
+  {
+    "name": "Teen Patti",
+    "icon": "🃏",
+    "category": "Card Game",
+    "file": "teen-patti.html",
+    "offline": true
+  }
+]

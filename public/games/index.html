@@ -1,0 +1,204 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SJO Games V6</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6fb;color:#111827;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1080px;margin:auto;padding:18px 15px 45px}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:11px}.logo{width:50px;height:50px;border-radius:17px;background:#111827;color:#fff;display:grid;place-items:center;font-size:26px}
+h1{margin:0;font-size:27px}.sub{font-size:12px;color:#7b8497}.iconbtn{border:1px solid #e1e5ed;background:#fff;width:43px;height:43px;border-radius:13px;font-size:18px}
+.profile{background:#111827;color:#fff;border-radius:25px;padding:18px;margin-bottom:13px}.phead{display:flex;align-items:center;gap:12px}.avatar{width:55px;height:55px;border-radius:18px;background:#f2c94c;display:grid;place-items:center;font-size:28px;color:#111827}.pname{font-weight:900;font-size:20px}.level{font-size:11px;color:#b8c1cf}
+.xpbar{height:8px;background:#ffffff18;border-radius:9px;overflow:hidden;margin-top:12px}.xpfill{height:100%;width:35%;background:#f2c94c;border-radius:9px}.xptext{font-size:10px;color:#aeb8c6;margin-top:5px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}.stat{background:#ffffff10;border:1px solid #ffffff16;border-radius:13px;padding:8px;text-align:center}.stat b{display:block;font-size:17px}.stat span{font-size:9px;color:#aeb8c6}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.tool{background:#fff;border:1px solid #e2e6ee;border-radius:18px;padding:14px;cursor:pointer}.tool b{font-size:13px}.tool p{margin:4px 0 0;font-size:10px;color:#7a8496}
+.challenge{background:linear-gradient(135deg,#fff,#f9f3d8);border:1px solid #ead99a;border-radius:20px;padding:15px;margin-bottom:14px}.challenge .ctop{display:flex;justify-content:space-between}.challenge h3{margin:3px 0;font-size:16px}.challenge p{margin:3px 0;color:#6f7683;font-size:11px}.reward{font-weight:900;color:#9a6a00;font-size:11px}
+.search{display:flex;gap:8px;margin-bottom:13px}input{flex:1;border:1px solid #e0e5ed;background:#fff;border-radius:14px;padding:13px;font-size:14px;outline:none}select{border:1px solid #e0e5ed;background:#fff;border-radius:14px;padding:0 11px;font-weight:700}
+.section-title{font-size:12px;font-weight:900;margin:14px 2px 8px;color:#505a6d}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:13px}
+.game-card{position:relative;background:#fff;border:1px solid #e2e6ee;border-radius:23px;min-height:205px;overflow:hidden;box-shadow:0 13px 32px #1118270b}.playlink{display:block;text-decoration:none;color:#111827;padding:20px;min-height:205px}.game-icon{font-size:43px;margin-bottom:15px}.tag{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#3157d5;font-weight:900}.game-card h2{font-size:21px;margin:4px 0}.game-card p{font-size:11px;color:#7a8496}.play{position:absolute;bottom:17px;left:20px;font-size:11px;font-weight:900}
+.fav{position:absolute;z-index:2;right:13px;top:13px;width:36px;height:36px;border:1px solid #e3e7ee;background:#f7f8fb;border-radius:11px;font-size:21px;color:#687286}.fav.on{background:#fff3c4;color:#b78100}
+.recent{display:flex;gap:8px;overflow:auto}.recent button{flex:0 0 auto;border:1px solid #e2e6ee;background:#fff;border-radius:13px;padding:9px 11px;font-weight:800}.empty{background:#fff;border:1px dashed #d8dde7;border-radius:16px;padding:15px;color:#7b8497;font-size:11px;text-align:center}
+.modalbg{position:fixed;inset:0;background:#11182799;display:none;align-items:flex-end;padding:13px;z-index:999}.modal{width:min(540px,100%);margin:auto;background:#fff;color:#111827;border-radius:25px;padding:22px}.modal h2{margin:0 0 12px}.modalrow{display:flex;gap:8px;flex-wrap:wrap}.pill{background:#f0f2f7;border-radius:12px;padding:9px 11px;font-size:11px;font-weight:800}.close{width:100%;margin-top:14px;border:0;background:#111827;color:#fff;border-radius:13px;padding:12px;font-weight:900}
+footer{text-align:center;color:#8b94a3;font-size:10px;margin-top:23px}
+.dark{background:#0b1220;color:#e7eaf0}.dark .tool,.dark .game-card,.dark input,.dark select,.dark .recent button,.dark .empty,.dark .modal{background:#121c2e;color:#e7eaf0;border-color:#26334a}.dark .game-card p,.dark .tool p{color:#93a0b4}
+@media(max-width:620px){h1{font-size:23px}.stats{grid-template-columns:repeat(2,1fr)}.search{flex-direction:column}select{height:44px}}
+</style><link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#111827">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+.v5bar{display:flex;gap:8px;margin:10px 0 14px;overflow:auto}
+.v5btn{border:1px solid #e1e5ed;background:#fff;border-radius:13px;padding:10px 12px;font-weight:800;font-size:11px;white-space:nowrap;color:#374151}
+.dark .v5btn{background:#121c2e;color:#e7eaf0;border-color:#26334a}
+.install{display:none}
+.notice{background:#eef5ff;border:1px solid #cfe0ff;border-radius:16px;padding:11px 13px;margin-bottom:13px;font-size:11px;color:#345}
+.dark .notice{background:#10213b;border-color:#244a78;color:#c8dcf7}
+.dataarea{width:100%;min-height:100px;border:1px solid #ddd;border-radius:12px;padding:10px;font:11px monospace}
+.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.modal-actions button{border:0;border-radius:12px;padding:11px;font-weight:900}
+.danger{background:#fee2e2;color:#991b1b}.primary{background:#111827;color:#fff}
+@media(max-width:620px){.modal-actions{grid-template-columns:1fr}}
+</style></head><body><main class="wrap">
+<header><div class="brand"><div class="logo">🎮</div><div><h1>SJO Games</h1><div class="sub">Play • Level Up • Collect • Track • Track</div></div></div><button class="iconbtn" id="theme">☾</button></header><div class="v5bar">
+<button class="v5btn" id="settingsBtn">⚙️ Settings</button>
+<button class="v5btn" id="exportBtn">⬇️ Backup Data</button>
+<button class="v5btn" id="importBtn">⬆️ Restore Data</button>
+<button class="v5btn install" id="installBtn">📲 Install App</button>
+</div>
+<div class="notice">⚡ V6 is offline-first. Your profile, XP, coins, favorites and achievements stay on this device.</div>
+
+<section class="profile">
+<div class="phead"><div class="avatar" id="avatar">🎮</div><div><div class="pname" id="pname">Player</div><div class="level">LEVEL <span id="level">1</span> • <span id="title">Rookie</span></div></div></div>
+<div class="xpbar"><div class="xpfill" id="xpfill"></div></div><div class="xptext" id="xptext">0 / 100 XP</div>
+<div class="stats"><div class="stat"><b id="played">0</b><span>PLAYED</span></div><div class="stat"><b id="wins">0</b><span>WINS</span></div><div class="stat"><b id="coins">100</b><span>COINS</span></div><div class="stat"><b id="ach">0/8</b><span>BADGES</span></div></div>
+</section>
+
+<div class="tools"><button class="tool" id="profileBtn"><b>👤 Local Profile</b><p>Change name & avatar</p></button><button class="tool" id="achBtn"><b>🏅 Achievements</b><p>View your badges</p></button></div>
+
+<section class="challenge"><div class="ctop"><div><div class="reward">🎁 DAILY CHALLENGE</div><h3>Play any 2 games today</h3><p id="dailyText">Progress: 0 / 2 • Reward: +25 coins</p></div><div style="font-size:28px">🔥</div></div></section>
+
+<div class="search"><input id="search" placeholder="🔎 Search games..."><select id="filter"><option value="all">All Games</option><option value="fav">Favorites</option></select></div>
+<div class="section-title">RECENTLY PLAYED</div><div id="recent" class="recent"></div>
+<div class="section-title">ALL GAMES</div><section class="grid"><article class="game-card" data-name="sudoku">
+<button class="fav" data-file="sudoku.html">☆</button>
+<a href="sudoku.html" class="playlink" data-file="sudoku.html">
+<div class="game-icon">🧩</div><div class="tag">Logic Grid</div><h2>Sudoku</h2>
+<p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="tic-tac-toe">
+<button class="fav" data-file="tic-tac-toe.html">☆</button>
+<a href="tic-tac-toe.html" class="playlink" data-file="tic-tac-toe.html">
+<div class="game-icon">❌⭕</div><div class="tag">Classic Duel</div><h2>Tic-Tac-Toe</h2>
+<p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="art block puzzle">
+<button class="fav" data-file="art-block-puzzle.html">☆</button>
+<a href="art-block-puzzle.html" class="playlink" data-file="art-block-puzzle.html">
+<div class="game-icon">🎨</div><div class="tag">Block Puzzle</div><h2>Art Block Puzzle</h2>
+<p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="ludo">
+<button class="fav" data-file="ludo.html">☆</button>
+<a href="ludo.html" class="playlink" data-file="ludo.html">
+<div class="game-icon">🎲</div><div class="tag">Board Race</div><h2>Ludo</h2>
+<p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="bubble shooter">
+<button class="fav" data-file="bubble-shooter.html">☆</button>
+<a href="bubble-shooter.html" class="playlink" data-file="bubble-shooter.html">
+<div class="game-icon">🫧</div><div class="tag">Match 3</div><h2>Bubble Shooter</h2>
+<p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="teen patti">
+<button class="fav" data-file="teen-patti.html">☆</button>
+<a href="teen-patti.html" class="playlink" data-file="teen-patti.html">
+<div class="game-icon">🃏</div><div class="tag">Card Game</div><h2>Teen Patti</h2>
+<p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article></section>
+<footer>Offline-first • All profile, XP, coins and achievements stay on this device</footer></main>
+
+<div class="modalbg" id="modal"><div class="modal"><h2 id="modalTitle">Local Profile</h2><div id="modalBody"></div><button class="close" onclick="closeModal()">Close</button></div></div>
+
+<input type="file" id="fileInput" accept=".json" style="display:none">
+<div class="modalbg" id="v5modal"><div class="modal">
+<h2 id="v5title">⚙️ Settings</h2>
+<div id="v5body"></div>
+<div class="modal-actions">
+<button class="primary" id="v5save">Save</button>
+<button class="danger" id="v5close">Close</button>
+</div></div></div>
+<script src="sjo-core.js"></script>
+
+<script>
+const games=[{"name": "Sudoku", "icon": "🧩", "tag": "Logic Grid", "file": "sudoku.html"}, {"name": "Tic-Tac-Toe", "icon": "❌⭕", "tag": "Classic Duel", "file": "tic-tac-toe.html"}, {"name": "Art Block Puzzle", "icon": "🎨", "tag": "Block Puzzle", "file": "art-block-puzzle.html"}, {"name": "Ludo", "icon": "🎲", "tag": "Board Race", "file": "ludo.html"}, {"name": "Bubble Shooter", "icon": "🫧", "tag": "Match 3", "file": "bubble-shooter.html"}, {"name": "Teen Patti", "icon": "🃏", "tag": "Card Game", "file": "teen-patti.html"}];
+const K='sjo_v4_';
+let data=JSON.parse(localStorage.getItem(K+'data')||'null')||{name:'Player',avatar:'🎮',xp:0,coins:100,played:0,wins:0,favs:[],recent:[],badges:[],daily:0};
+const avatars=['🎮','😎','🦊','🐼','🚀','⭐','👑','🤖'];
+const badges=[['first','🎮 First Game','Play your first game'],['five','🔥 Getting Started','Play 5 games'],['ten','🏆 Regular','Play 10 games'],['fav','⭐ Collector','Favorite 3 games'],['level3','🚀 Level 3','Reach level 3'],['coins','🪙 Saver','Collect 250 coins'],['win','🥇 Winner','Record a win'],['daily','📅 Daily','Complete a daily challenge']];
+function save(){localStorage.setItem(K+'data',JSON.stringify(data))}
+function level(){return Math.floor(data.xp/100)+1}
+function checkBadges(){const add=(id)=>{if(!data.badges.includes(id))data.badges.push(id)};if(data.played>=1)add('first');if(data.played>=5)add('five');if(data.played>=10)add('ten');if(data.favs.length>=3)add('fav');if(level()>=3)add('level3');if(data.coins>=250)add('coins');if(data.wins>=1)add('win');if(data.daily>=2)add('daily');save()}
+function refresh(){
+ checkBadges();const lv=level(),xp=data.xp%100;
+ document.getElementById('pname').textContent=data.name;document.getElementById('avatar').textContent=data.avatar;
+ document.getElementById('level').textContent=lv;document.getElementById('title').textContent=lv>=10?'Legend':lv>=5?'Pro':lv>=3?'Gamer':'Rookie';
+ document.getElementById('xpfill').style.width=xp+'%';document.getElementById('xptext').textContent=xp+' / 100 XP';
+ document.getElementById('played').textContent=data.played;document.getElementById('wins').textContent=data.wins;document.getElementById('coins').textContent=data.coins;document.getElementById('ach').textContent=data.badges.length+'/8';
+ document.getElementById('dailyText').textContent='Progress: '+Math.min(data.daily,2)+' / 2 • Reward: +25 coins';
+ document.querySelectorAll('.fav').forEach(b=>{const on=data.favs.includes(b.dataset.file);b.classList.toggle('on',on);b.textContent=on?'★':'☆'});
+ renderRecent();apply();
+}
+function renderRecent(){const box=document.getElementById('recent');box.innerHTML='';if(!data.recent.length){box.innerHTML='<div class="empty">No games played yet. Choose a game below.</div>';return}data.recent.forEach(f=>{const g=games.find(x=>x.file===f);if(!g)return;const b=document.createElement('button');b.textContent=g.icon+' '+g.name;b.onclick=()=>location.href=g.file;box.appendChild(b)})}
+function apply(){const q=document.getElementById('search').value.toLowerCase().trim(),mode=document.getElementById('filter').value;document.querySelectorAll('.game-card').forEach(c=>{const f=c.querySelector('.fav').dataset.file;c.style.display=(!q||c.dataset.name.includes(q))&&(mode==='all'||data.favs.includes(f))?'block':'none'})}
+function openModal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modal').style.display='flex'}
+function closeModal(){document.getElementById('modal').style.display='none'}
+document.querySelectorAll('.fav').forEach(b=>b.onclick=e=>{e.preventDefault();const f=b.dataset.file;data.favs=data.favs.includes(f)?data.favs.filter(x=>x!==f):[...data.favs,f];save();refresh()});
+document.querySelectorAll('.playlink').forEach(a=>a.onclick=()=>{const f=a.dataset.file;data.recent=[f,...data.recent.filter(x=>x!==f)].slice(0,5);data.played++;data.xp+=10;data.coins+=5;if(data.daily<2)data.daily++;checkBadges();save()});
+document.getElementById('search').oninput=apply;document.getElementById('filter').onchange=apply;
+document.getElementById('theme').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem(K+'theme',document.body.classList.contains('dark')?'dark':'light');document.getElementById('theme').textContent=document.body.classList.contains('dark')?'☀':'☾'};
+document.getElementById('profileBtn').onclick=()=>openModal('👤 Local Profile','<p>Change your local player profile.</p><input id="newName" value="'+data.name.replace(/"/g,'&quot;')+'" placeholder="Player name" style="width:100%;padding:11px;border:1px solid #ddd;border-radius:10px"><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px">'+avatars.map(a=>'<button class="pill avpick">'+a+'</button>').join('')+'</div><button class="close" id="saveProfile">Save Profile</button>');
+document.getElementById('achBtn').onclick=()=>openModal('🏅 Achievements',badges.map(b=>{const got=data.badges.includes(b[0]);return '<div class="pill" style="display:block;margin:7px 0;opacity:'+(got?1:.45)+'">'+b[1]+' — '+b[2]+(got?' ✓':'')+'</div>'}).join(''));
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.classList.contains('avpick')){data.avatar=e.target.textContent;document.querySelectorAll('.avpick').forEach(x=>x.style.outline='');e.target.style.outline='2px solid #3157d5'}if(e.target.id==='saveProfile'){const n=document.getElementById('newName').value.trim();if(n)data.name=n;save();closeModal();refresh()}});
+if(localStorage.getItem(K+'theme')==='dark'){document.body.classList.add('dark');document.getElementById('theme').textContent='☀'}
+refresh();
+
+// ===== SJO Games V5 additions =====
+const v5modal=document.getElementById('v5modal'),v5body=document.getElementById('v5body');
+function v5Open(title,body){document.getElementById('v5title').textContent=title;v5body.innerHTML=body;v5modal.style.display='flex'}
+function v5Close(){v5modal.style.display='none'}
+document.getElementById('v5close').onclick=v5Close;
+
+document.getElementById('settingsBtn').onclick=()=>{
+  v5Open('⚙️ Settings',`
+    <label style="display:block;font-size:11px;font-weight:800;margin:8px 0">Player name</label>
+    <input id="v5name" value="${(data.name||'Player').replace(/"/g,'&quot;')}" style="width:100%;padding:11px;border:1px solid #ddd;border-radius:10px">
+    <label style="display:block;font-size:11px;font-weight:800;margin:12px 0 6px">Avatar</label>
+    <div id="v5avatars" style="display:flex;gap:7px;flex-wrap:wrap">
+      ${avatars.map(a=>`<button class="pill v5av">${a}</button>`).join('')}
+    </div>
+    <div style="margin-top:14px;font-size:11px;color:#778196">Theme: ${localStorage.getItem(K+'theme')==='dark'?'Dark':'Light'}</div>
+    <button id="v5reset" class="danger" style="width:100%;border:0;border-radius:12px;padding:11px;font-weight:900;margin-top:13px">Reset All Local Data</button>
+  `);
+  document.querySelectorAll('.v5av').forEach(b=>{
+    if(b.textContent===data.avatar)b.style.outline='2px solid #3157d5';
+    b.onclick=()=>{data.avatar=b.textContent;document.querySelectorAll('.v5av').forEach(x=>x.style.outline='');b.style.outline='2px solid #3157d5'};
+  });
+  document.getElementById('v5reset').onclick=()=>{
+    if(confirm('Reset all SJO Games local data?')){
+      localStorage.removeItem(K+'data'); localStorage.removeItem(K+'theme');
+      location.reload();
+    }
+  };
+};
+document.getElementById('v5save').onclick=()=>{
+  const n=document.getElementById('v5name');
+  if(n && n.value.trim()) data.name=n.value.trim();
+  save(); refresh(); v5Close();
+};
+
+document.getElementById('exportBtn').onclick=()=>{
+  const blob=new Blob([JSON.stringify({version:5,exportedAt:new Date().toISOString(),data},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sjo-games-v5-backup.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+document.getElementById('importBtn').onclick=()=>document.getElementById('fileInput').click();
+document.getElementById('fileInput').onchange=e=>{
+  const file=e.target.files[0]; if(!file)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const obj=JSON.parse(r.result);
+      if(!obj.data || typeof obj.data!=='object') throw new Error('Invalid backup');
+      data={...data,...obj.data}; save(); refresh(); alert('Backup restored successfully.');
+    }catch(err){alert('Invalid SJO Games backup file.')}
+    e.target.value='';
+  }; r.readAsText(file);
+};
+
+// PWA install prompt
+let deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); deferredInstall=e;
+  const b=document.getElementById('installBtn'); if(b)b.style.display='block';
+});
+const installBtn=document.getElementById('installBtn');
+if(installBtn) installBtn.onclick=async()=>{
+  if(!deferredInstall)return;
+  deferredInstall.prompt();
+  await deferredInstall.userChoice;
+  deferredInstall=null; installBtn.style.display='none';
+};
+if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+
+</script><script src="sjo-v8-offline.js"></script>
+<script src="sjo-v9-advanced-offline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="sjo-supabase-sync.js"></script>
+</body></html>

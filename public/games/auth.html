@@ -46,9 +46,9 @@ button{cursor:pointer;border:0;font-weight:800;border-radius:14px;padding:13px;w
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-// ---- Fill these in from your Supabase project settings (Project Settings → API) ----
-const SUPABASE_URL = "https://YOUR-PROJECT-REF.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR-ANON-PUBLIC-KEY";
+// ---- Connected to the SJO-ERP portal's Supabase project (shared login) ----
+const SUPABASE_URL = "https://kxusesmymrlbjsbppikm.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_T8sMx32GuOd8V5tvtb3gPg_RQHhrQ1h";
 // --------------------------------------------------------------------------------
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -73,6 +73,19 @@ function clearNotices(){ errEl.style.display = 'none'; msgEl.style.display = 'no
 function redirectTarget(){
   const params = new URLSearchParams(location.search);
   return params.get('redirect') || 'index.html';
+}
+
+// If the portal handed off a session (see openGames() in Login.jsx), adopt
+// it immediately instead of showing the login form.
+async function tryHandoff(){
+  const params = new URLSearchParams(location.search);
+  const access_token = params.get('at');
+  const refresh_token = params.get('rt');
+  if (!access_token || !refresh_token) return false;
+  const { error } = await sb.auth.setSession({ access_token, refresh_token });
+  if (error) return false;
+  window.location.href = redirectTarget();
+  return true;
 }
 
 // Event delegation so the toggle keeps working after innerHTML swaps the <a> node
@@ -129,8 +142,11 @@ googleBtn.addEventListener('click', async () => {
 });
 
 // If already signed in, skip straight through
-sb.auth.getSession().then(({ data }) => {
-  if (data.session) window.location.href = redirectTarget();
+tryHandoff().then((handled) => {
+  if (handled) return;
+  sb.auth.getSession().then(({ data }) => {
+    if (data.session) window.location.href = redirectTarget();
+  });
 });
 </script>
 </body></html>

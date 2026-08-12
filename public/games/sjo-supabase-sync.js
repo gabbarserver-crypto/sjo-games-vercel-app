@@ -7,9 +7,9 @@
 (function () {
   'use strict';
 
-  // ---- Fill these in from your Supabase project settings (Project Settings → API) ----
-  const SUPABASE_URL = "https://YOUR-PROJECT-REF.supabase.co";
-  const SUPABASE_ANON_KEY = "YOUR-ANON-PUBLIC-KEY";
+  // ---- Connected to the SJO-ERP portal's Supabase project (shared login) ----
+  const SUPABASE_URL = "https://kxusesmymrlbjsbppikm.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_T8sMx32GuOd8V5tvtb3gPg_RQHhrQ1h";
   // --------------------------------------------------------------------------------
 
   const QUEUE_KEY = 'sjo_sync_queue';
@@ -20,7 +20,26 @@
     return location.pathname.split('/').pop() || 'index.html';
   }
 
+  // If the portal opened this page with a session handed off in the URL
+  // (see openGames() in Login.jsx), adopt that session instead of asking
+  // the person to log in again. The tokens are stripped from the address
+  // bar immediately after use so they don't linger in history/bookmarks.
+  async function adoptHandoffSession() {
+    const params = new URLSearchParams(location.search);
+    const access_token = params.get('at');
+    const refresh_token = params.get('rt');
+    if (!access_token || !refresh_token) return false;
+
+    const { error } = await sb.auth.setSession({ access_token, refresh_token });
+
+    const cleanUrl = location.pathname + location.hash;
+    window.history.replaceState(null, '', cleanUrl);
+
+    return !error;
+  }
+
   async function requireSession() {
+    await adoptHandoffSession();
     const { data: { session } } = await sb.auth.getSession();
     if (!session) {
       const redirect = encodeURIComponent(currentFile());

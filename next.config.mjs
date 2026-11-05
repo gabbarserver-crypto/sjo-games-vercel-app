@@ -9,6 +9,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/games',
+        destination: '/games/index.html',
+        permanent: false,
+      },
+      {
         source: '/',
         destination: '/games/index.html',
         permanent: false,

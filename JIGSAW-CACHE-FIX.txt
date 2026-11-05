@@ -1,0 +1,1 @@
+Fixed old Art Block Puzzle precache entry, bumped Service Worker cache version, and added /games redirect. Deploy the full project, then unregister the old service worker and clear site data once.

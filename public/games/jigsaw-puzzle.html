@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>SJO Jigsaw Puzzle</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="shortcut icon" href="favicon.ico"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#111827">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f5f7fb;color:#111827}
+.app{max-width:600px;margin:auto;min-height:100vh;padding:17px 14px 30px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:44px;height:44px;border-radius:14px;background:#111827;color:#fff;display:grid;place-items:center;font-size:22px}
+h1{font-size:21px;margin:0}.sub{font-size:12px;color:#7a8497}
+.back{border:1px solid #e2e6ee;background:#fff;border-radius:12px;padding:9px 13px;font-weight:800;font-size:13px;color:#111827;text-decoration:none}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:#fff;border:1px solid #e8ecf3;border-radius:14px;padding:9px;text-align:center}.stat b{display:block;font-size:19px}.stat span{font-size:10px;color:#7a8497;text-transform:uppercase;letter-spacing:.05em}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+.tab,.ctl button,.ctl select,.ctl label{border:1px solid #e2e6ee;background:#fff;border-radius:11px;padding:8px 11px;font-size:12px;font-weight:800;color:#111827;cursor:pointer;font-family:inherit}
+.tab.active{border-color:#6d42dc;background:#f1ecff;color:#4b2bb8}
+.ctl{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}.ctl .primary{background:#6d42dc;color:#fff;border-color:#6d42dc}.ctl .on{background:#fff6d6;border-color:#f0c64d}
+#file{display:none}
+.stage-wrap{background:#fff;border:1px solid #e8ecf3;border-radius:18px;padding:8px;box-shadow:0 10px 30px #1118270d}
+svg#stage{display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none}
+.piece{cursor:grab;touch-action:none}.piece.drag{cursor:grabbing}
+.msg{text-align:center;font-size:12px;color:#7a8497;margin:10px 0 0}
+.overlay{position:fixed;inset:0;background:#0f172a99;display:none;align-items:center;justify-content:center;z-index:20;padding:20px}
+.modal{background:#fff;border-radius:22px;padding:26px;text-align:center;max-width:340px;width:100%}.modal .emoji{font-size:54px}.modal h2{margin:6px 0}.modal p{color:#5b6478;font-size:14px}
+.modal button{margin-top:12px;border:0;background:#6d42dc;color:#fff;border-radius:13px;padding:12px 22px;font-size:14px;font-weight:800;cursor:pointer}
+</style>
+<link rel="stylesheet" href="sjo-ui.css"><script src="sjo-fx.js"></script>
+</head><body><main class="app">
+<header><div class="brand"><div class="logo">🧩</div><div><h1>SJO Jigsaw Puzzle</h1><div class="sub">Drag • Snap • Complete the picture</div></div></div><a class="back" href="index.html">← Games</a></header>
+<div class="stats"><div class="stat"><b id="sTime">0:00</b><span>Time</span></div><div class="stat"><b id="sMoves">0</b><span>Moves</span></div><div class="stat"><b id="sDone">0/0</b><span>Placed</span></div></div>
+<div class="tabs" id="tabs"></div>
+<div class="ctl"><select id="size"><option value="3">Easy · 9 pieces</option><option value="4" selected>Medium · 16 pieces</option><option value="5">Hard · 25 pieces</option></select><button id="hint">💡 Hint</button><label for="file">📷 My Photo</label><input type="file" id="file" accept="image/*"><button class="primary" id="newg">↻ New Puzzle</button></div>
+<div class="stage-wrap"><svg id="stage" viewBox="0 0 600 900" xmlns="http://www.w3.org/2000/svg"></svg></div>
+<p class="msg" id="msg">Drag a piece onto the board. It snaps in when it is in the right spot.</p>
+</main>
+<div class="overlay" id="win"><div class="modal"><div class="emoji">🏆</div><h2>Puzzle complete!</h2><p id="winText"></p><button id="again">Play Again</button></div></div>
+<script src="sjo-core.js"></script>
+<script>
+(function(){
+const S=600,TRAY=620,$=id=>document.getElementById(id);let H=900;
+/* ---------- Pictures (drawn in code, 600x600) ---------- */
+const sun='<circle cx="500" cy="85" r="48" fill="#ffe066"/>',cloud=(x,y)=>`<g fill="#fff"><ellipse cx="${x}" cy="${y}" rx="70" ry="26"/><ellipse cx="${x+38}" cy="${y-16}" rx="42" ry="26"/></g>`;
+const flower=(x,y,c)=>`<g><circle cx="${x-9}" cy="${y}" r="9" fill="${c}"/><circle cx="${x+9}" cy="${y}" r="9" fill="${c}"/><circle cx="${x}" cy="${y-9}" r="9" fill="${c}"/><circle cx="${x}" cy="${y+9}" r="9" fill="${c}"/><circle cx="${x}" cy="${y}" r="6" fill="#ffd23f"/></g>`;
+const pics={
+'Chick':{icon:'🐥',svg:`<rect width="600" height="600" fill="#8fd8ff"/>${sun}${cloud(120,110)}${cloud(380,170)}
+<ellipse cx="300" cy="470" rx="440" ry="170" fill="#7ed957"/><ellipse cx="80" cy="430" rx="170" ry="80" fill="#9be564"/><rect y="480" width="600" height="120" fill="#5fbf45"/>
+${flower(70,540,'#ff6fa5')}${flower(520,530,'#fff')}${flower(130,575,'#ff9f43')}${flower(470,575,'#ff6fa5')}${flower(560,470,'#c084fc')}
+<ellipse cx="300" cy="410" rx="150" ry="135" fill="#ffd93d"/><ellipse cx="165" cy="415" rx="38" ry="70" fill="#ffc400" transform="rotate(20 165 415)"/><ellipse cx="435" cy="415" rx="38" ry="70" fill="#ffc400" transform="rotate(-20 435 415)"/>
+<circle cx="300" cy="255" r="112" fill="#ffe45c"/><path d="M280 150 Q300 100 320 150 Q335 110 350 150Z" fill="#ffc400"/>
+<circle cx="255" cy="240" r="19" fill="#222"/><circle cx="345" cy="240" r="19" fill="#222"/><circle cx="261" cy="233" r="7" fill="#fff"/><circle cx="351" cy="233" r="7" fill="#fff"/>
+<circle cx="212" cy="295" r="22" fill="#ff9bb0"/><circle cx="388" cy="295" r="22" fill="#ff9bb0"/><path d="M265 285 L335 285 L300 335Z" fill="#ff8c1a"/>
+<path d="M250 535 l-25 28 h60z M350 535 l-25 28 h60z" fill="#ff8c1a"/>`},
+'Fish':{icon:'🐠',svg:`<defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fdcff"/><stop offset="1" stop-color="#1e63d6"/></linearGradient></defs>
+<rect width="600" height="600" fill="url(#sea)"/><path d="M0 0 L120 0 L60 300Z M300 0 L420 0 L360 260Z" fill="#fff" opacity=".12"/>
+<ellipse cx="300" cy="610" rx="400" ry="90" fill="#f2d28b"/>
+<path d="M60 600 Q30 520 70 470 Q40 420 75 370 Q55 330 80 300 Q90 360 100 420 Q120 480 95 530 Q110 570 100 600Z" fill="#2fbf71"/><path d="M510 600 Q480 530 520 480 Q490 430 525 390 Q540 450 550 500 Q565 550 545 600Z" fill="#1ea85f"/>
+<circle cx="90" cy="150" r="20" fill="none" stroke="#fff" stroke-width="5" opacity=".8"/><circle cx="130" cy="95" r="12" fill="none" stroke="#fff" stroke-width="4" opacity=".8"/><circle cx="520" cy="170" r="24" fill="none" stroke="#fff" stroke-width="5" opacity=".8"/>
+<path d="M120 290 L40 200 Q30 290 40 380Z" fill="#ff7a1a"/><path d="M230 190 Q300 90 390 175Z" fill="#ffb347"/><path d="M270 400 Q320 480 390 400Z" fill="#ffb347"/>
+<ellipse cx="300" cy="290" rx="190" ry="125" fill="#ff9a2e"/><ellipse cx="300" cy="330" rx="150" ry="70" fill="#ffc46b"/>
+<path d="M200 190 Q170 290 200 390" stroke="#fff" stroke-width="16" fill="none" opacity=".75"/><path d="M270 170 Q245 290 270 410" stroke="#fff" stroke-width="16" fill="none" opacity=".75"/>
+<circle cx="420" cy="250" r="32" fill="#fff"/><circle cx="430" cy="250" r="17" fill="#222"/><circle cx="436" cy="244" r="6" fill="#fff"/>
+<path d="M470 320 Q445 345 415 328" stroke="#b34700" stroke-width="7" fill="none" stroke-linecap="round"/>
+<g transform="translate(470 500)" fill="#ff6fa5"><path d="M0 -40 L12 -12 L42 -12 L18 6 L27 36 L0 18 L-27 36 L-18 6 L-42 -12 L-12 -12Z"/></g>`},
+'Turtle':{icon:'🐢',svg:`<rect width="600" height="600" fill="#bfe9ff"/>${cloud(110,90)}${cloud(450,130)}
+<g fill="none" stroke-width="22"><path d="M40 360 A260 260 0 0 1 560 360" stroke="#ff4d4d"/><path d="M62 360 A238 238 0 0 1 538 360" stroke="#ff9f43"/><path d="M84 360 A216 216 0 0 1 516 360" stroke="#ffd93d"/><path d="M106 360 A194 194 0 0 1 494 360" stroke="#55c878"/><path d="M128 360 A172 172 0 0 1 472 360" stroke="#4385ed"/><path d="M150 360 A150 150 0 0 1 450 360" stroke="#a47af5"/></g>
+<ellipse cx="150" cy="470" rx="260" ry="110" fill="#8fdc66"/><rect y="470" width="600" height="130" fill="#6cc84c"/>
+${flower(60,555,'#ff6fa5')}${flower(530,540,'#ffd23f')}${flower(300,580,'#fff')}
+<ellipse cx="190" cy="500" rx="48" ry="34" fill="#f2a93b"/><ellipse cx="400" cy="505" rx="48" ry="34" fill="#f2a93b"/>
+<circle cx="480" cy="360" r="62" fill="#f7b84a"/><circle cx="500" cy="345" r="13" fill="#222"/><circle cx="504" cy="341" r="4" fill="#fff"/><path d="M485 390 Q510 398 530 380" stroke="#a45a00" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="470" cy="385" r="12" fill="#ff9bb0"/>
+<ellipse cx="290" cy="420" rx="170" ry="125" fill="#e0492f"/><path d="M290 310 L350 350 L335 420 L245 420 L230 350Z" fill="#ffd24a"/><path d="M180 400 L230 350 L245 420 L205 470Z M400 400 L350 350 L335 420 L375 470Z M245 420 L335 420 L350 480 L230 480Z" fill="#ffd24a" opacity=".9"/>
+<path d="M170 430 Q290 560 410 430" stroke="#a52c18" stroke-width="12" fill="none" opacity=".35"/>`},
+'Giraffe':{icon:'🦒',svg:`<rect width="600" height="600" fill="#a8e6ff"/>${sun}${cloud(130,100)}
+<ellipse cx="450" cy="500" rx="300" ry="120" fill="#8fe06a"/><rect y="500" width="600" height="100" fill="#6cc84c"/>
+<rect x="85" y="300" width="36" height="230" fill="#8a5a2b"/><circle cx="103" cy="270" r="85" fill="#2fa84f"/><circle cx="50" cy="320" r="55" fill="#3dbb5c"/><circle cx="160" cy="320" r="55" fill="#3dbb5c"/>
+${flower(220,560,'#ff6fa5')}${flower(560,555,'#fff')}${flower(40,570,'#ffd23f')}
+<rect x="300" y="430" width="38" height="120" fill="#ffd45e"/><rect x="420" y="430" width="38" height="120" fill="#ffd45e"/><rect x="345" y="440" width="34" height="110" fill="#f5c33d"/><rect x="465" y="440" width="34" height="110" fill="#f5c33d"/>
+<ellipse cx="400" cy="420" rx="125" ry="75" fill="#ffd45e"/><rect x="340" y="170" width="76" height="260" fill="#ffd45e" transform="rotate(-6 378 300)"/>
+<ellipse cx="370" cy="130" rx="62" ry="45" fill="#ffd45e"/><ellipse cx="335" cy="150" rx="40" ry="30" fill="#ffe9a8"/><circle cx="325" cy="145" r="6" fill="#8a5a2b"/>
+<rect x="355" y="55" width="8" height="40" fill="#8a5a2b"/><circle cx="359" cy="52" r="10" fill="#8a5a2b"/><rect x="392" y="60" width="8" height="38" fill="#8a5a2b"/><circle cx="396" cy="57" r="10" fill="#8a5a2b"/>
+<circle cx="378" cy="118" r="11" fill="#222"/><circle cx="381" cy="114" r="4" fill="#fff"/>
+<g fill="#c97a2b"><circle cx="365" cy="230" r="16"/><circle cx="395" cy="290" r="18"/><circle cx="368" cy="345" r="15"/><circle cx="360" cy="420" r="20"/><circle cx="440" cy="400" r="18"/><circle cx="480" cy="440" r="14"/><circle cx="400" cy="470" r="13"/></g>
+<path d="M520 400 Q560 420 555 470" stroke="#c97a2b" stroke-width="9" fill="none" stroke-linecap="round"/>`}
+};
+/* ---------- State ---------- */
+let n=4,cs=150,picKey='Chick',customUrl=null,pieces=[],locked=0,moves=0,t0=0,tick=null,hintOn=false,drag=null,done=false;
+const stage=$('stage');
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+const rnd=(a,b)=>a+Math.random()*(b-a);
+/* ---------- Piece outlines ---------- */
+function edge(P,u,v,s,len){
+  if(!s)return `L${(P[0]+u[0]*len).toFixed(1)} ${(P[1]+u[1]*len).toFixed(1)} `;
+  const m=(a,b)=>((P[0]+u[0]*a*len+v[0]*b*s*len).toFixed(1)+' '+(P[1]+u[1]*a*len+v[1]*b*s*len).toFixed(1));
+  return `L${m(.36,0)} C${m(.36,.06)},${m(.28,.10)},${m(.30,.17)} C${m(.32,.24)},${m(.42,.26)},${m(.50,.26)} C${m(.58,.26)},${m(.68,.24)},${m(.70,.17)} C${m(.72,.10)},${m(.64,.06)},${m(.64,0)} L${m(1,0)} `;
+}
+function piecePath(r,c,h,v){
+  const x=c*cs,y=r*cs;
+  return `M${x} ${y} `+edge([x,y],[1,0],[0,1],h[r][c],cs)+edge([x+cs,y],[0,1],[1,0],v[r][c+1],cs)+edge([x+cs,y+cs],[-1,0],[0,1],h[r+1][c],cs)+edge([x,y+cs],[0,-1],[1,0],v[r][c],cs)+'Z';
+}
+/* ---------- Build puzzle ---------- */
+function artMarkup(){
+  return customUrl?`<rect width="600" height="600" fill="#fff"/><image href="${customUrl}" x="0" y="0" width="600" height="600" preserveAspectRatio="xMidYMid slice"/>`:pics[picKey].svg;
+}
+function build(){
+  clearInterval(tick);tick=null;t0=0;moves=0;locked=0;done=false;drag=null;
+  n=+$('size').value;cs=S/n;
+  const h=Array.from({length:n+1},(_,r)=>Array.from({length:n},()=>(r===0||r===n)?0:(Math.random()<.5?1:-1)));
+  const v=Array.from({length:n},()=>Array.from({length:n+1},(_,c)=>(c===0||c===n)?0:(Math.random()<.5?1:-1)));
+  let defs=`<g id="art">${artMarkup()}</g>`,loose='';pieces=[];
+  const cols=Math.max(1,Math.floor(S/(cs*.92))),slotW=cs*.92,slotH=cs*.78,rows=Math.ceil(n*n/cols);
+  H=Math.round(TRAY+cs*.3+rows*slotH+cs*.55);stage.setAttribute('viewBox','0 0 600 '+H);
+  const left=(S-(cols*slotW+(cs-slotW)))/2;
+  const order=[...Array(n*n).keys()].sort(()=>Math.random()-.5);
+  order.forEach((i,k)=>{
+    const r=Math.floor(i/n),c=i%n,d=piecePath(r,c,h,v);
+    defs+=`<clipPath id="cp${i}"><path d="${d}"/></clipPath>`;
+    const tx=left+(k%cols)*slotW+rnd(-6,6)-c*cs,ty=TRAY+cs*.3+Math.floor(k/cols)*slotH+rnd(-6,6)-r*cs;
+    loose+=`<g class="piece" data-i="${i}" transform="translate(${tx.toFixed(1)} ${ty.toFixed(1)})"><g clip-path="url(#cp${i})"><use href="#art"/></g><path d="${d}" fill="none" stroke="#1118278c" stroke-width="2" stroke-linejoin="round"/></g>`;
+    pieces[i]={i,r,c,dx:tx,dy:ty,locked:false};
+  });
+  let grid='';for(let k=1;k<n;k++)grid+=`<path d="M${k*cs} 0V${S}M0 ${k*cs}H${S}" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6 6"/>`;
+  stage.innerHTML=`<defs>${defs}</defs>
+   <rect x="0" y="0" width="${S}" height="${S}" rx="10" fill="#eef2f8"/>
+   <use id="ghost" href="#art" opacity="${hintOn?.3:0}" pointer-events="none"/>${grid}
+   <rect x="0" y="0" width="${S}" height="${S}" rx="10" fill="none" stroke="#94a3b8" stroke-width="3"/>
+   <rect x="0" y="${TRAY-12}" width="${S}" height="${H-TRAY+12}" rx="14" fill="#e9eef6"/>
+   <text x="300" y="${TRAY+6}" text-anchor="middle" font-size="15" fill="#94a3b8" font-family="system-ui,sans-serif">Piece tray — drag the pieces up to the board</text>
+   <g id="lockedL"></g><g id="looseL">${loose}</g>`;
+  updateStats();$('sTime').textContent='0:00';
+  $('msg').textContent='Drag a piece onto the board. It snaps in when it is in the right spot.';
+  $('win').style.display='none';
+}
+function updateStats(){$('sMoves').textContent=moves;$('sDone').textContent=locked+'/'+n*n}
+/* ---------- Dragging ---------- */
+function pt(e){const p=stage.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(stage.getScreenCTM().inverse())}
+stage.addEventListener('pointerdown',e=>{
+  const el=e.target.closest('.piece');if(!el||done)return;
+  const p=pieces[+el.dataset.i];if(p.locked)return;
+  e.preventDefault();const q=pt(e);
+  drag={p,el,ox:q.x-p.dx,oy:q.y-p.dy};el.classList.add('drag');
+  $('looseL').appendChild(el);
+  try{stage.setPointerCapture(e.pointerId)}catch(_){}
+  if(!t0){t0=Date.now();tick=setInterval(()=>{$('sTime').textContent=fmt(Math.floor((Date.now()-t0)/1000))},500)}
+});
+stage.addEventListener('pointermove',e=>{
+  if(!drag)return;const q=pt(e);
+  drag.p.dx=q.x-drag.ox;drag.p.dy=q.y-drag.oy;
+  drag.el.setAttribute('transform',`translate(${drag.p.dx.toFixed(1)} ${drag.p.dy.toFixed(1)})`);
+});
+stage.addEventListener('touchmove',e=>{if(drag)e.preventDefault()},{passive:false});
+function endDrag(){
+  if(!drag)return;const {p,el}=drag;drag=null;el.classList.remove('drag');moves++;
+  if(Math.abs(p.dx)<cs*.25&&Math.abs(p.dy)<cs*.25){
+    p.dx=0;p.dy=0;p.locked=true;locked++;
+    el.setAttribute('transform','translate(0 0)');el.classList.remove('piece');el.style.pointerEvents='none';
+    $('lockedL').appendChild(el);
+    try{navigator.vibrate&&navigator.vibrate(15)}catch(_){}
+    $('msg').textContent=locked===n*n?'Perfect!':'Nice! '+(n*n-locked)+' piece'+(n*n-locked===1?'':'s')+' to go.';
+  }
+  updateStats();
+  if(locked===n*n)win();
+}
+stage.addEventListener('pointerup',endDrag);stage.addEventListener('pointercancel',endDrag);
+/* ---------- Win ---------- */
+function bestKey(){return 'sjo_jigsaw_best_'+(customUrl?'photo':picKey)+'_'+n}
+function win(){
+  done=true;clearInterval(tick);tick=null;
+  const secs=Math.max(1,Math.floor((Date.now()-t0)/1000)),score=Math.max(100,n*n*100-secs*2);
+  let best=secs,msg='';
+  try{const old=+localStorage.getItem(bestKey());if(old&&old<best){best=old}else{localStorage.setItem(bestKey(),best);if(old)msg=' New best time!'}}catch(_){}
+  $('sTime').textContent=fmt(secs);
+  $('winText').textContent='Time '+fmt(secs)+' · '+moves+' moves · Best '+fmt(best)+'.'+msg;
+  $('win').style.display='flex';
+  try{window.SJO.record('win',score,{secs,moves,pieces:n*n});window.SJOGamesV9&&window.SJOGamesV9.record('Jigsaw Puzzle','win',score)}catch(_){}
+}
+/* ---------- Controls ---------- */
+function makeTabs(){
+  const t=$('tabs');t.innerHTML='';
+  Object.keys(pics).forEach(k=>{const b=document.createElement('button');b.className='tab'+(!customUrl&&k===picKey?' active':'');b.textContent=pics[k].icon+' '+k;b.onclick=()=>{picKey=k;customUrl=null;makeTabs();build()};t.appendChild(b)});
+}
+$('size').onchange=build;$('newg').onclick=build;$('again').onclick=build;
+$('hint').onclick=()=>{hintOn=!hintOn;$('hint').classList.toggle('on',hintOn);const g=$('ghost');if(g)g.setAttribute('opacity',hintOn?.3:0)};
+$('file').onchange=e=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  const rd=new FileReader();rd.onload=()=>{customUrl=rd.result;makeTabs();build()};rd.readAsDataURL(f);e.target.value='';
+};
+makeTabs();build();
+})();
+</script>
+<script src="sjo-v8-offline.js"></script>
+<script src="sjo-v9-advanced-offline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="sjo-supabase-sync.js"></script>
+<script src="sjo-cloud-backup.js"></script>
+</body></html>

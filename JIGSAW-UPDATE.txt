@@ -1,0 +1,20 @@
+SJO GAMES UPDATE
+
+Changes applied:
+- Removed Art Block Puzzle (public/games/art-block-puzzle.html).
+- Replaced its home-page card and games.json entry with Jigsaw Puzzle.
+- Added public/games/jigsaw-puzzle.html.
+- Updated SJO core game registration for Jigsaw Puzzle.
+- Preserved the existing 168-page Coloring Book, Tambola files, and other project files.
+
+Run:
+  npm install
+  npm run dev
+
+Jigsaw game URL:
+  /games/jigsaw-puzzle.html
+
+After testing:
+  git add .
+  git commit -m "Replace Art Block Puzzle with Jigsaw Puzzle"
+  git push

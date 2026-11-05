@@ -14,10 +14,10 @@
     "offline": true
   },
   {
-    "name": "Art Block Puzzle",
-    "icon": "🎨",
-    "category": "Block Puzzle",
-    "file": "art-block-puzzle.html",
+    "name": "Jigsaw Puzzle",
+    "icon": "🧩",
+    "category": "Jigsaw",
+    "file": "jigsaw-puzzle.html",
     "offline": true
   },
   {

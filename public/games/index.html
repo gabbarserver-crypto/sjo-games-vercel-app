@@ -82,10 +82,10 @@ footer{text-align:center;color:#8b94a3;font-size:10px;margin-top:23px}
 <button class="fav" data-file="tic-tac-toe.html">☆</button>
 <a href="tic-tac-toe.html" class="playlink" data-file="tic-tac-toe.html">
 <div class="game-icon"><img src="icons/tic-tac-toe.png" alt="" loading="lazy" onerror="this.parentNode.textContent='❌⭕'"></div><div class="tag">Classic Duel</div><h2>Tic-Tac-Toe</h2>
-<p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="art block puzzle">
-<button class="fav" data-file="art-block-puzzle.html">☆</button>
-<a href="art-block-puzzle.html" class="playlink" data-file="art-block-puzzle.html">
-<div class="game-icon"><img src="icons/art-block-puzzle.png" alt="" loading="lazy" onerror="this.parentNode.textContent='🎨'"></div><div class="tag">Block Puzzle</div><h2>Art Block Puzzle</h2>
+<p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="jigsaw puzzle">
+<button class="fav" data-file="jigsaw-puzzle.html">☆</button>
+<a href="jigsaw-puzzle.html" class="playlink" data-file="jigsaw-puzzle.html">
+<div class="game-icon"><img src="icons/jigsaw-puzzle.png" alt="" loading="lazy" onerror="this.parentNode.textContent='🧩'"></div><div class="tag">Jigsaw</div><h2>Jigsaw Puzzle</h2>
 <p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="ludo">
 <button class="fav" data-file="ludo.html">☆</button>
 <a href="ludo.html" class="playlink" data-file="ludo.html">
@@ -137,7 +137,7 @@ footer{text-align:center;color:#8b94a3;font-size:10px;margin-top:23px}
 <script src="sjo-core.js"></script>
 
 <script>
-const games=[{"name": "Sudoku", "icon": "🧩", "tag": "Logic Grid", "file": "sudoku.html"}, {"name": "Tic-Tac-Toe", "icon": "❌⭕", "tag": "Classic Duel", "file": "tic-tac-toe.html"}, {"name": "Art Block Puzzle", "icon": "🎨", "tag": "Block Puzzle", "file": "art-block-puzzle.html"}, {"name": "Ludo", "icon": "🎲", "tag": "Board Race", "file": "ludo.html"}, {"name": "Snake & Ladder", "icon": "🐍", "tag": "Board Race", "file": "snake-ladder.html"}, {"name": "Bubble Shooter", "icon": "🫧", "tag": "Match 3", "file": "bubble-shooter.html"}, {"name": "Teen Patti", "icon": "🃏", "tag": "Card Game", "file": "teen-patti.html"}, {"name": "Spider Solitaire", "icon": "🕷️", "tag": "Card Game", "file": "spider-solitaire.html"}, {"name": "Tambola Caller", "icon": "🎙️", "tag": "Number Caller", "file": "tambola.html"}, {"name": "Coloring Book", "icon": "🖍️", "tag": "Kids Creative", "file": "coloring-book.html"}];
+const games=[{"name": "Sudoku", "icon": "🧩", "tag": "Logic Grid", "file": "sudoku.html"}, {"name": "Tic-Tac-Toe", "icon": "❌⭕", "tag": "Classic Duel", "file": "tic-tac-toe.html"}, {"name": "Jigsaw Puzzle", "icon": "🧩", "tag": "Jigsaw", "file": "jigsaw-puzzle.html"}, {"name": "Ludo", "icon": "🎲", "tag": "Board Race", "file": "ludo.html"}, {"name": "Snake & Ladder", "icon": "🐍", "tag": "Board Race", "file": "snake-ladder.html"}, {"name": "Bubble Shooter", "icon": "🫧", "tag": "Match 3", "file": "bubble-shooter.html"}, {"name": "Teen Patti", "icon": "🃏", "tag": "Card Game", "file": "teen-patti.html"}, {"name": "Spider Solitaire", "icon": "🕷️", "tag": "Card Game", "file": "spider-solitaire.html"}, {"name": "Tambola Caller", "icon": "🎙️", "tag": "Number Caller", "file": "tambola.html"}, {"name": "Coloring Book", "icon": "🖍️", "tag": "Kids Creative", "file": "coloring-book.html"}];
 const K='sjo_v4_';
 let data=JSON.parse(localStorage.getItem(K+'data')||'null')||{name:'Player',avatar:'🎮',xp:0,coins:100,played:0,wins:0,favs:[],recent:[],badges:[],daily:0};
 const avatars=['🎮','😎','🦊','🐼','🚀','⭐','👑','🤖'];

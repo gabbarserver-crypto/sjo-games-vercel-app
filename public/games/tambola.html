@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#151b35"><title>SJO Tambola Caller</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#34416e,#151b35 55%);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#fff;min-height:100vh}
+.app{max-width:1000px;margin:auto;padding:16px 14px 35px}header{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:45px;height:45px;border-radius:15px;background:linear-gradient(135deg,#ffbf47,#ff6c85);display:grid;place-items:center;font-size:24px}h1{font-size:21px;margin:0}.sub{font-size:11px;color:#bbc5e0}.back{color:#fff;text-decoration:none;border:1px solid #ffffff35;padding:9px 12px;border-radius:12px;font-size:12px;font-weight:800}
+.hero{text-align:center;margin:22px 0 14px}.hero h2{font-size:26px;margin:0}.hero p{font-size:12px;color:#bdc8e3;margin:5px}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px}.panel{background:#ffffff0d;border:1px solid #ffffff20;border-radius:22px;padding:15px;backdrop-filter:blur(10px)}
+.current{text-align:center;padding:20px 10px 16px}.label{font-size:11px;letter-spacing:2px;color:#b9c4e0;font-weight:900}.number{width:190px;height:190px;margin:14px auto;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#fff2c9,#ffbd49 55%,#f58c35);color:#18203a;font-size:80px;font-weight:1000;box-shadow:0 14px 40px #ffb43b45,inset 0 -8px 0 #d9792b55}.number.empty{font-size:50px;color:#66708c;background:#e8ecf6;box-shadow:none}.spoken{font-size:16px;font-weight:800;min-height:24px}.count{font-size:12px;color:#b9c4e0;margin-top:6px}
+.controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.controls button,.settings button{border:0;border-radius:13px;padding:12px 15px;font-weight:900;font-size:12px;cursor:pointer}.primary{background:#ffbd49;color:#18203a}.secondary{background:#ffffff18;color:#fff;border:1px solid #ffffff2b!important}.danger{background:#ff657d;color:#fff}.auto{background:#7ce0b0;color:#102c28}
+.settings{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px;justify-content:center}.settings label{font-size:11px;color:#c7d0e7}.settings select{padding:9px;border-radius:10px;border:1px solid #ffffff30;background:#202b4e;color:white}
+.side h3{margin:0 0 12px;font-size:14px}.grid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}.cell{aspect-ratio:1;border-radius:8px;background:#ffffff12;border:1px solid #ffffff17;display:grid;place-items:center;font-size:11px;font-weight:800;color:#c5cee3}.cell.called{background:#ffbd49;color:#18203a;border-color:#ffdb8d}.cell.latest{background:#7ce0b0;color:#102c28;box-shadow:0 0 0 2px #fff}
+.history{display:flex;flex-wrap:wrap;gap:6px;min-height:30px}.chip{background:#ffffff18;border:1px solid #ffffff20;border-radius:9px;padding:7px 9px;font-size:11px;font-weight:900}.empty-history{font-size:11px;color:#aeb9d5}
+.side-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.side-actions button{background:#ffffff16;border:1px solid #ffffff24;color:#fff;border-radius:10px;padding:9px 10px;font-size:11px;font-weight:800}
+.note{text-align:center;color:#aeb9d5;font-size:10px;margin:17px 0 0}.toast{position:fixed;bottom:18px;left:50%;transform:translate(-50%,20px);opacity:0;background:#fff;color:#17203c;padding:10px 14px;border-radius:12px;font-size:12px;font-weight:900;transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:760px){.main{grid-template-columns:1fr}.side{order:2}.grid{gap:4px}.cell{font-size:10px}.number{width:165px;height:165px;font-size:72px}}
+</style></head>
+<body><main class="app">
+<header><div class="brand"><div class="logo">🎙️</div><div><h1>SJO Tambola Caller</h1><div class="sub">Random numbers • Voice announcement • 1 to 90</div></div></div><a class="back" href="index.html">← Games</a></header>
+<section class="hero"><h2>🎟️ Tambola / Housie</h2><p>Press Next Number or start Auto Caller. Numbers are never repeated.</p></section>
+<div class="main">
+<section class="panel">
+<div class="current"><div class="label">NOW CALLING</div><div class="number empty" id="number">READY</div><div class="spoken" id="spoken">Let's play Tambola!</div><div class="count"><span id="calledCount">0</span> of 90 numbers called</div>
+<div class="controls"><button class="primary" id="next">🎲 Next Number</button><button class="auto" id="auto">▶ Start Auto</button><button class="secondary" id="repeat">🔊 Repeat</button></div>
+<div class="settings"><label>Voice <select id="language"><option value="hi-IN">Hindi</option><option value="en-IN">English (India)</option><option value="en-US">English (US)</option></select></label><label>Speed <select id="speed"><option value="3">3 sec</option><option value="5" selected>5 sec</option><option value="7">7 sec</option><option value="10">10 sec</option></select></label><label><input type="checkbox" id="voiceOn" checked> Speak numbers</label></div>
+</div>
+<div class="side-actions" style="justify-content:center"><button id="fullscreen">⛶ Full Screen</button><button id="reset" class="danger">↻ New Game / Reset</button></div>
+</section>
+<aside class="panel">
+<h3>🔢 Number Board (1–90)</h3><div class="grid" id="grid"></div>
+<h3 style="margin-top:18px">🕘 Last Called Numbers</h3><div class="history" id="history"><span class="empty-history">No numbers called yet.</span></div>
+<div class="side-actions"><button id="copy">Copy Called Numbers</button></div>
+</aside></div>
+<p class="note">Voice works best in Chrome. Keep this tab open while the auto caller is running.</p>
+</main><div class="toast" id="toast"></div>
+<script>
+(()=>{
+let remaining=[],called=[],timer=null,last=null;
+const $=id=>document.getElementById(id);
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function say(n){if(!$('voiceOn').checked||!('speechSynthesis'in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance('Number '+n);u.lang=$('language').value;u.rate=.88;u.pitch=1;window.speechSynthesis.speak(u)}
+function announce(n){last=n;$('number').textContent=n;$('number').classList.remove('empty');$('spoken').textContent='Number '+n;$('calledCount').textContent=called.length;say(n);render()}
+function render(){
+const grid=$('grid');grid.innerHTML='';for(let n=1;n<=90;n++){const d=document.createElement('div');d.className='cell'+(called.includes(n)?' called':'')+(n===last?' latest':'');d.textContent=n;grid.appendChild(d)}
+const h=$('history');h.innerHTML='';if(!called.length){h.innerHTML='<span class="empty-history">No numbers called yet.</span>'}else called.slice(-12).reverse().forEach(n=>{const s=document.createElement('span');s.className='chip';s.textContent=n;h.appendChild(s)});
+$('calledCount').textContent=called.length;
+}
+function next(){if(!remaining.length){stop();toast('All 90 numbers have been called!');return}const n=remaining.pop();called.push(n);announce(n);if(!remaining.length){stop();toast('🎉 Tambola complete!')}}
+function start(){if(!remaining.length){toast('Start a new game first.');return}if(timer)return;next();timer=setInterval(next,Number($('speed').value)*1000);$('auto').textContent='⏸ Pause Auto';$('auto').className='danger'}
+function stop(){if(timer){clearInterval(timer);timer=null} $('auto').textContent='▶ Start Auto';$('auto').className='auto'}
+function reset(){stop();if('speechSynthesis'in window)window.speechSynthesis.cancel();remaining=shuffle(Array.from({length:90},(_,i)=>i+1));called=[];last=null;$('number').textContent='READY';$('number').classList.add('empty');$('spoken').textContent='New game is ready!';render();toast('New Tambola game ready')}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)}
+$('next').onclick=()=>{if(timer)stop();next()};
+$('auto').onclick=()=>timer?stop():start();
+$('repeat').onclick=()=>last?say(last):toast('No number to repeat yet.');
+$('reset').onclick=()=>{if(confirm('Start a new Tambola game? All called numbers will be cleared.'))reset()};
+$('speed').onchange=()=>{if(timer){stop();start()}};
+$('copy').onclick=async()=>{const s=called.join(', ');try{await navigator.clipboard.writeText(s);toast('Called numbers copied')}catch(e){toast(s||'No numbers called yet')}};
+$('fullscreen').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&timer){stop();toast('Auto caller paused while tab is hidden')}})
+reset();
+})();
+</script>
+<script src="sjo-core.js"></script><script src="sjo-v8-offline.js"></script><script src="sjo-v9-advanced-offline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script><script src="sjo-supabase-sync.js"></script><script src="sjo-cloud-backup.js"></script>
+</body></html>

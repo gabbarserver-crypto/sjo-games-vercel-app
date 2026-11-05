@@ -106,6 +106,14 @@ footer{text-align:center;color:#8b94a3;font-size:10px;margin-top:23px}
 <button class="fav" data-file="spider-solitaire.html">☆</button>
 <a href="spider-solitaire.html" class="playlink" data-file="spider-solitaire.html">
 <div class="game-icon"><img src="icons/spider-solitaire.png" alt="" loading="lazy" onerror="this.parentNode.textContent='🕷️'"></div><div class="tag">Card Game</div><h2>Spider Solitaire</h2>
+<p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="tambola housie caller">
+<button class="fav" data-file="tambola.html">☆</button>
+<a href="tambola.html" class="playlink" data-file="tambola.html">
+<div class="game-icon"><img src="icons/tambola.png" alt="" loading="lazy" onerror="this.parentNode.textContent='🎙️'"></div><div class="tag">Number Caller</div><h2>Tambola Caller</h2>
+<p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="coloring book">
+<button class="fav" data-file="coloring-book.html">☆</button>
+<a href="coloring-book.html" class="playlink" data-file="coloring-book.html">
+<div class="game-icon"><img src="icons/coloring-book.png" alt="" loading="lazy" onerror="this.parentNode.textContent='🖍️'"></div><div class="tag">Kids Creative</div><h2>Coloring Book</h2>
 <p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article></section>
 </div></div>
 <footer>Offline-first • All profile, XP, coins and achievements stay on this device</footer></main>
@@ -129,7 +137,7 @@ footer{text-align:center;color:#8b94a3;font-size:10px;margin-top:23px}
 <script src="sjo-core.js"></script>
 
 <script>
-const games=[{"name": "Sudoku", "icon": "🧩", "tag": "Logic Grid", "file": "sudoku.html"}, {"name": "Tic-Tac-Toe", "icon": "❌⭕", "tag": "Classic Duel", "file": "tic-tac-toe.html"}, {"name": "Art Block Puzzle", "icon": "🎨", "tag": "Block Puzzle", "file": "art-block-puzzle.html"}, {"name": "Ludo", "icon": "🎲", "tag": "Board Race", "file": "ludo.html"}, {"name": "Snake & Ladder", "icon": "🐍", "tag": "Board Race", "file": "snake-ladder.html"}, {"name": "Bubble Shooter", "icon": "🫧", "tag": "Match 3", "file": "bubble-shooter.html"}, {"name": "Teen Patti", "icon": "🃏", "tag": "Card Game", "file": "teen-patti.html"}, {"name": "Spider Solitaire", "icon": "🕷️", "tag": "Card Game", "file": "spider-solitaire.html"}];
+const games=[{"name": "Sudoku", "icon": "🧩", "tag": "Logic Grid", "file": "sudoku.html"}, {"name": "Tic-Tac-Toe", "icon": "❌⭕", "tag": "Classic Duel", "file": "tic-tac-toe.html"}, {"name": "Art Block Puzzle", "icon": "🎨", "tag": "Block Puzzle", "file": "art-block-puzzle.html"}, {"name": "Ludo", "icon": "🎲", "tag": "Board Race", "file": "ludo.html"}, {"name": "Snake & Ladder", "icon": "🐍", "tag": "Board Race", "file": "snake-ladder.html"}, {"name": "Bubble Shooter", "icon": "🫧", "tag": "Match 3", "file": "bubble-shooter.html"}, {"name": "Teen Patti", "icon": "🃏", "tag": "Card Game", "file": "teen-patti.html"}, {"name": "Spider Solitaire", "icon": "🕷️", "tag": "Card Game", "file": "spider-solitaire.html"}, {"name": "Tambola Caller", "icon": "🎙️", "tag": "Number Caller", "file": "tambola.html"}, {"name": "Coloring Book", "icon": "🖍️", "tag": "Kids Creative", "file": "coloring-book.html"}];
 const K='sjo_v4_';
 let data=JSON.parse(localStorage.getItem(K+'data')||'null')||{name:'Player',avatar:'🎮',xp:0,coins:100,played:0,wins:0,favs:[],recent:[],badges:[],daily:0};
 const avatars=['🎮','😎','🦊','🐼','🚀','⭐','👑','🤖'];

@@ -54,5 +54,19 @@
     "category": "Card Game",
     "file": "spider-solitaire.html",
     "offline": true
+  },
+  {
+    "name": "Tambola Caller",
+    "icon": "🎙️",
+    "category": "Number Caller",
+    "file": "tambola.html",
+    "offline": true
+  },
+  {
+    "name": "Coloring Book",
+    "icon": "🖍️",
+    "category": "Kids Creative",
+    "file": "coloring-book.html",
+    "offline": true
   }
 ]

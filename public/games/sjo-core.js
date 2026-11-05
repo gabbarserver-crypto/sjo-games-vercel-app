@@ -8,7 +8,8 @@ const GAMES={
  'bubble-shooter.html':{id:'bubble',name:'Bubble Shooter',icon:'🫧'},
  'snake-ladder.html':{id:'snake',name:'Snake & Ladder',icon:'🐍'},
  'teen-patti.html':{id:'teen',name:'Teen Patti',icon:'🃏'},
- 'spider-solitaire.html':{id:'spider',name:'Spider Solitaire',icon:'🕷️'}
+ 'spider-solitaire.html':{id:'spider',name:'Spider Solitaire',icon:'🕷️'},
+ 'coloring-book.html':{id:'coloring',name:'Coloring Book',icon:'🖍️'}
 };
 const defaults=()=>({version:6,name:'Player',avatar:'🎮',xp:0,coins:100,played:0,wins:0,losses:0,draws:0,streak:0,bestStreak:0,totalScore:0,favs:[],recent:[],daily:{date:'',count:0,rewarded:false},achievements:[],history:[],games:Object.fromEntries(Object.values(GAMES).map(g=>[g.id,{played:0,wins:0,losses:0,draws:0,score:0,bestScore:0,streak:0,bestStreak:0,lastPlayed:null,extra:{}}]))});
 function migrate(){let d;try{d=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){} if(d&&d.version===6)return d; let old=null;try{old=JSON.parse(localStorage.getItem('sjo_v4_data')||localStorage.getItem('sjo_v4_data')||'null')}catch(e){}; d=defaults(); if(old){Object.assign(d,{name:old.name||d.name,avatar:old.avatar||d.avatar,xp:old.xp||0,coins:old.coins??100,favs:old.favs||[],recent:old.recent||[]});} localStorage.setItem(KEY,JSON.stringify(d));return d}

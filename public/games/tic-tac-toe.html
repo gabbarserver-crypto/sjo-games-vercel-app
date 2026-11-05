@@ -2,6 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SJO Games</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="shortcut icon" href="favicon.ico"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#111827">
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f5f7fb;color:#111827}
 .app{max-width:560px;margin:auto;min-height:100vh;padding:18px 15px 30px}
@@ -19,6 +20,7 @@ header{display:flex;align-items:center;gap:11px;margin-bottom:18px}.logo{width:4
 padding:9px 12px;background:#111827;color:#fff;font:700 13px system-ui;border-radius:0 0 14px 14px;box-shadow:0 5px 18px #11182722}
 #sjoNav a{color:#fff;text-decoration:none;background:#ffffff18;border:1px solid #ffffff25;padding:7px 10px;border-radius:9px}
 </style>
+<link rel="stylesheet" href="sjo-ui.css"><script src="sjo-fx.js"></script>
 </head><body><nav id="sjoNav"><span>🎮 SJO Games</span><a href="index.html">⌂ Games</a></nav>
 <div class="app">
 <header><div class="logo">🎮</div><div><h1>SJO Games</h1><div class="sub">Play offline • More games coming</div></div></header>
@@ -40,7 +42,7 @@ function play(i){if(turn!=='X'||b[i]||gameOver)return;b[i]='X';let r=winner();if
 function cpuMove(){if(gameOver)return;let moves=b.map((v,i)=>v?null:i).filter(x=>x!==null),pick;if(mode==='hard')pick=bestMove();else pick=moves[Math.floor(Math.random()*moves.length)];b[pick]='O';let r=winner();if(r)return finish(r);turn='X';render()}
 function bestMove(){let best=-Infinity,move;for(let i=0;i<9;i++)if(!b[i]){b[i]='O';let s=minimax(false);b[i]='';if(s>best){best=s;move=i}}return move}
 function minimax(maximizing){let r=winner();if(r==='O')return 10;if(r==='X')return -10;if(r==='draw')return 0;let best=maximizing?-Infinity:Infinity;for(let i=0;i<9;i++)if(!b[i]){b[i]=maximizing?'O':'X';let s=minimax(!maximizing);b[i]='';best=maximizing?Math.max(best,s):Math.min(best,s)}return best}
-function finish(r){gameOver=true;window.SJO.record(r==='X'?'win':r==='O'?'loss':'draw',r==='X'?100:r==='O'?0:50,{mode});window.SJOGamesV9&&window.SJOGamesV9.record('Tic-Tac-Toe',r==='X'?'win':r==='O'?'loss':'draw',r==='X'?100:r==='O'?0:50);if(r==='X'){you++;save();title.textContent='You win!';emoji.textContent='🏆';result.textContent='Great move. Keep going!'}else if(r==='O'){cpu++;save();title.textContent='Computer wins';emoji.textContent='🤖';result.textContent='Try again — you can beat it.'}else{draw++;save();title.textContent='It’s a draw';emoji.textContent='🤝';result.textContent='No winner this round.'}document.getElementById('win').style.display='flex';render()}
+function finish(r){gameOver=true;window.SJO.record(r==='X'?'win':r==='O'?'loss':'draw',r==='X'?100:r==='O'?0:50,{mode});window.SJOGamesV9&&window.SJOGamesV9.record('Tic-Tac-Toe',r==='X'?'win':r==='O'?'loss':'draw',r==='X'?100:r==='O'?0:50);if(r==='X'){you++;save();title.textContent='You win!';emoji.textContent='🏆';result.textContent='Great move. Keep going!'}else if(r==='O'){cpu++;save();title.textContent='Computer wins';emoji.textContent='🤖';result.textContent='Try again — you can beat it.'}else{draw++;save();title.textContent='It’s a draw';emoji.textContent='🤝';result.textContent='No winner this round.'}render();let wl=wins.find(w=>b[w[0]]&&b[w[0]]===b[w[1]]&&b[w[1]]===b[w[2]]);if(wl){const sq=document.querySelectorAll('.square');wl.forEach(i=>sq[i].classList.add('winline'));setTimeout(()=>document.getElementById('win').style.display='flex',750)}else document.getElementById('win').style.display='flex'}
 function save(){localStorage.setItem('ttt_you',you);localStorage.setItem('ttt_cpu',cpu);localStorage.setItem('ttt_draw',draw);document.getElementById('you').textContent=you;document.getElementById('cpu').textContent=cpu;document.getElementById('draw').textContent=draw}
 function newGame(){b=Array(9).fill('');gameOver=false;turn='X';render()}
 function setMode(m){mode=m;document.querySelectorAll('.mode button').forEach(x=>x.classList.remove('active'));document.getElementById(m).classList.add('active');newGame()}
@@ -49,4 +51,5 @@ save();newGame();
 <script src="sjo-v9-advanced-offline.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="sjo-supabase-sync.js"></script>
+<script src="sjo-cloud-backup.js"></script>
 </body></html>

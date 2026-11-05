@@ -109,6 +109,7 @@
   }
 
   function addPanel(){
+  if(!/\/(index\.html)?$/.test(location.pathname))return; 
     if(document.getElementById('sjo-v7-panel')) return;
     const style=document.createElement('style');
     style.textContent=`

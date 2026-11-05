@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>SJO Spider Solitaire</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="shortcut icon" href="favicon.ico"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#111827">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+background:
+ repeating-linear-gradient(90deg,rgba(0,0,0,.035) 0 2px,transparent 2px 9px),
+ linear-gradient(180deg,#c78e56,#b97f47 45%,#c48a52);
+-webkit-user-select:none;user-select:none;overscroll-behavior:none}
+#sjoNav{position:sticky;top:0;z-index:9999;display:flex;justify-content:space-between;align-items:center;
+padding:9px 12px;background:#111827;color:#fff;font:700 13px system-ui;border-radius:0 0 14px 14px;box-shadow:0 5px 18px #11182722}
+#sjoNav a{color:#fff;text-decoration:none;background:#ffffff18;border:1px solid #ffffff25;padding:7px 10px;border-radius:9px}
+
+.sp-wrap{max-width:1200px;margin:0 auto}
+.sp-bar{background:linear-gradient(180deg,#5a3a22,#43291a);border-bottom:2px solid #2c1a10;padding:8px 10px;box-shadow:0 3px 10px #0005}
+.sp-title{text-align:center;font-weight:900;letter-spacing:.5px;color:#f7a823;font-size:18px;margin-bottom:4px}
+.sp-stats{display:flex;justify-content:space-between;gap:6px;font-weight:800;font-size:13px;color:#ffe6cc}
+.sp-stats span b{color:#fff}
+.sp-ctl{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;padding:8px 8px 0}
+.sp-ctl button,.sp-ctl select{border:0;border-radius:11px;padding:9px 13px;font:800 13px system-ui;background:#43291a;color:#ffe6cc;box-shadow:0 2px 0 #24140b}
+.sp-ctl button:disabled{opacity:.45}
+.sp-ctl .pri{background:#f7a823;color:#3a2210;box-shadow:0 2px 0 #b97814}
+
+.sp-board{--cw:60px;--ch:84px;--gap:6px;padding:12px 6px 40px;position:relative;touch-action:none}
+.sp-top,.sp-tab{display:grid;grid-template-columns:repeat(10,var(--cw));gap:var(--gap);justify-content:center}
+.sp-top{height:var(--ch);margin-bottom:calc(var(--ch)*.28)}
+.sp-tab{align-items:start}
+.sp-slot{position:relative;width:var(--cw);height:var(--ch);border:2px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);border-radius:calc(var(--cw)*.09)}
+.sp-stock{position:relative;width:var(--cw);height:var(--ch);cursor:pointer}
+.sp-stock .sp-card{cursor:pointer}
+.sp-col{position:relative;width:var(--cw)}
+.sp-col::before{content:'';position:absolute;left:0;top:0;width:100%;height:var(--ch);border:2px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);border-radius:calc(var(--cw)*.09)}
+
+.sp-card{position:absolute;left:0;width:var(--cw);height:var(--ch);border-radius:calc(var(--cw)*.09);background:#fff;color:#111;
+box-shadow:0 1px 3px #0007;font-weight:800;line-height:1;overflow:hidden;cursor:pointer}
+.sp-card.red{color:#d51f1f}
+.sp-card .tl{position:absolute;left:9%;top:5%;font-size:calc(var(--cw)*.3);text-align:center}
+.sp-card .tl i{display:block;font-style:normal;font-size:.85em;margin-top:2px}
+.sp-card .mid{position:absolute;right:8%;bottom:5%;font-size:calc(var(--cw)*.52)}
+.sp-card.back{background:repeating-linear-gradient(45deg,#2f4fa8 0 4px,#4268c9 4px 8px);border:calc(var(--cw)*.06) solid #fff;cursor:default}
+.sp-stock .sp-card.back{cursor:pointer}
+.sp-card.sp-hidden{visibility:hidden}
+.sp-card.sp-hint{box-shadow:0 0 0 3px #ffd34d,0 0 14px 4px #ffd34dcc;animation:spPulse .55s ease-in-out 3}
+.sp-slot.sp-hint,.sp-col.sp-hint::before,.sp-stock.sp-hint{box-shadow:0 0 0 3px #ffd34d,0 0 14px 4px #ffd34dcc}
+.sp-card.sp-shake{animation:spShake .3s}
+.sp-done{background:#fff;border-color:#fff}
+.sp-ghost{position:fixed;left:0;top:0;z-index:20000;pointer-events:none;width:var(--cw)}
+.sp-ghost .sp-card{box-shadow:0 8px 18px #0008}
+@keyframes spPulse{50%{transform:translateY(-4px)}}
+@keyframes spShake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+.sp-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(30px);background:#24140bee;color:#ffe6cc;padding:10px 16px;border-radius:12px;font:800 13px system-ui;opacity:0;transition:.25s;pointer-events:none;z-index:30000;max-width:90vw;text-align:center}
+.sp-toast.on{opacity:1;transform:translateX(-50%)}
+
+.overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:14px;z-index:10000}
+.modal{width:min(420px,100%);background:#fff;color:#14231f;border-radius:25px;padding:25px;text-align:center}
+.modal .emoji{font-size:48px}.modal h2{margin:6px}.modal p{color:#66756f;margin:6px 0 16px}
+.modal button{width:100%;border:0;border-radius:14px;padding:13px;background:#43291a;color:#fff;font-weight:800}
+
+@media (max-width:520px){
+ .sp-title{font-size:15px}.sp-stats{font-size:11px}
+ .sp-board{padding:10px 3px 40px}
+ .sp-card .tl i{margin-top:0}
+}
+</style>
+<link rel="stylesheet" href="sjo-ui.css"><script src="sjo-fx.js"></script>
+</head>
+<body class="tp spider"><nav id="sjoNav"><span>🎮 SJO Games</span><a href="index.html">⌂ Games</a></nav>
+
+<div class="sp-wrap">
+ <div class="sp-bar">
+  <div class="sp-title">SPIDER SOLITAIRE</div>
+  <div class="sp-stats">
+   <span>Time: <b id="time">00:00:00</b></span>
+   <span>Moves: <b id="moves">0</b></span>
+   <span>Score: <b id="score">500</b></span>
+   <span>Best: <b id="best">0</b></span>
+  </div>
+ </div>
+ <div class="sp-ctl">
+  <button class="pri" id="btnNew">↻ New Game</button>
+  <button id="btnUndo">↶ Undo</button>
+  <button id="btnHint">💡 Hint</button>
+  <select id="suits" aria-label="Difficulty">
+   <option value="1">1 Suit • Easy</option>
+   <option value="2">2 Suits • Medium</option>
+   <option value="4">4 Suits • Hard</option>
+  </select>
+ </div>
+ <div class="sp-board" id="spBoard">
+  <div class="sp-top" id="top"></div>
+  <div class="sp-tab" id="tab"></div>
+ </div>
+</div>
+
+<div class="sp-toast" id="toast"></div>
+
+<div class="overlay" id="overlay"><div class="modal"><div class="emoji">🏆</div><h2>You win!</h2><p id="resultText"></p><button id="btnAgain">Play Again</button></div></div>
+
+<script src="sjo-core.js"></script>
+<script>
+(function(){
+'use strict';
+const SUITS=['♠','♥','♣','♦'];           // index 1 and 3 are red
+const RANKS=['','A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const $=id=>document.getElementById(id);
+const board=$('spBoard'),topEl=$('top'),tabEl=$('tab');
+
+let T=[],stock=[],found=[],score=500,moves=0,undo=[],seconds=0,timer=null,won=false;
+let nSuits=+(localStorage.getItem('sjo_spider_suits')||2);
+if(![1,2,4].includes(nSuits))nSuits=2;
+$('suits').value=String(nSuits);
+let uid=0,drag=null,hintTimer=null,CW=60,CH=84;
+
+/* ---------- helpers ---------- */
+const bestKey=()=>'sjo_spider_best_'+nSuits;
+const getBest=()=>+(localStorage.getItem(bestKey())||0);
+function fmt(s){const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return [h,m,x].map(n=>String(n).padStart(2,'0')).join(':')}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('on'),1700)}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+/* ---------- game setup ---------- */
+function newGame(){
+  const suitList=nSuits===1?[0]:nSuits===2?[0,1]:[0,1,2,3];
+  const copies=8/suitList.length,deck=[];
+  suitList.forEach(s=>{for(let c=0;c<copies;c++)for(let r=1;r<=13;r++)deck.push({id:++uid,s,r,up:false})});
+  shuffle(deck);
+  T=Array.from({length:10},()=>[]);
+  for(let c=0;c<10;c++){const n=c<4?6:5;for(let k=0;k<n;k++)T[c].push(deck.pop())}
+  T.forEach(col=>col[col.length-1].up=true);
+  stock=deck;found=[];score=500;moves=0;undo=[];seconds=0;won=false;
+  $('overlay').style.display='none';
+  clearInterval(timer);timer=setInterval(()=>{if(!won){seconds++;$('time').textContent=fmt(seconds)}},1000);
+  render();
+}
+
+/* ---------- rules ---------- */
+function movable(c,i){
+  const col=T[c];if(i<0||i>=col.length||!col[i].up)return false;
+  for(let k=i;k<col.length-1;k++){
+    if(col[k].s!==col[k+1].s||col[k].r!==col[k+1].r+1||!col[k+1].up)return false;
+  }
+  return true;
+}
+function canDrop(c,i,d){
+  if(c===d)return false;
+  const dest=T[d],card=T[c][i];
+  return dest.length===0||dest[dest.length-1].r===card.r+1;
+}
+function snapshot(){
+  undo.push(JSON.stringify({T,stock,found,score,moves}));
+  if(undo.length>300)undo.shift();
+}
+function doUndo(){
+  if(!undo.length||won)return;
+  const s=JSON.parse(undo.pop());
+  T=s.T;stock=s.stock;found=s.found;score=s.score;moves=s.moves;
+  render();
+}
+function flipTop(c){const col=T[c];if(col.length&&!col[col.length-1].up)col[col.length-1].up=true}
+function checkRuns(){
+  let got=0;
+  for(let c=0;c<10;c++){
+    const col=T[c],n=col.length;
+    if(n<13)continue;
+    const base=col[n-13];
+    let ok=true;
+    for(let k=0;k<13;k++){const x=col[n-13+k];if(!x.up||x.s!==base.s||x.r!==13-k){ok=false;break}}
+    if(ok){col.splice(n-13,13);found.push(base.s);score+=100;got++;flipTop(c)}
+  }
+  return got;
+}
+function afterMove(){
+  const got=checkRuns();
+  if(got)toast('Sequence complete! +'+(got*100));
+  render();
+  if(found.length===8)win();
+}
+function moveRun(c,i,d){
+  snapshot();
+  const cards=T[c].splice(i);
+  T[d].push(...cards);
+  flipTop(c);
+  moves++;score=Math.max(0,score-1);
+  afterMove();
+}
+function dealRow(){
+  if(won)return;
+  if(!stock.length){toast('No more cards in the stock');return}
+  if(T.some(col=>col.length===0)){toast('Fill every empty column before dealing');return}
+  snapshot();
+  for(let c=0;c<10;c++){const card=stock.pop();card.up=true;T[c].push(card)}
+  moves++;score=Math.max(0,score-1);
+  afterMove();
+}
+function autoMove(c,i,el){
+  const card=T[c][i];let best=-1,bs=-1;
+  for(let d=0;d<10;d++){
+    if(!canDrop(c,i,d))continue;
+    const dest=T[d];
+    if(dest.length===0&&i===0)continue;           // pointless: whole column to empty column
+    let sc=dest.length===0?1:2;
+    if(dest.length&&dest[dest.length-1].s===card.s)sc=3;
+    if(sc>bs){bs=sc;best=d}
+  }
+  if(best<0){if(el){el.classList.add('sp-shake');setTimeout(()=>el.classList.remove('sp-shake'),320)}return}
+  moveRun(c,i,best);
+}
+
+/* ---------- win ---------- */
+function win(){
+  won=true;clearInterval(timer);
+  const bonus=Math.max(0,500-Math.floor(seconds/2));  // quicker finish = more points
+  score+=bonus;
+  const prev=getBest();
+  if(score>prev)localStorage.setItem(bestKey(),String(score));
+  updateStats();
+  $('resultText').textContent='Score '+score+' • '+moves+' moves • '+fmt(seconds)+(score>prev?' • New best!':'');
+  try{window.SJO&&window.SJO.record('win',score,{suits:nSuits,moves,seconds})}catch(e){}
+  setTimeout(()=>{$('overlay').style.display='flex'},350);
+}
+
+/* ---------- hint ---------- */
+function clearHint(){clearTimeout(hintTimer);document.querySelectorAll('.sp-hint').forEach(e=>e.classList.remove('sp-hint'))}
+function hint(){
+  if(won)return;clearHint();
+  let best=null,bs=-1;
+  for(let c=0;c<10;c++){
+    for(let i=0;i<T[c].length;i++){
+      if(!movable(c,i))continue;
+      for(let d=0;d<10;d++){
+        if(!canDrop(c,i,d))continue;
+        const dest=T[d];
+        if(dest.length===0&&i===0)continue;
+        let sc=1;
+        if(dest.length&&dest[dest.length-1].s===T[c][i].s)sc+=4;
+        if(i>0&&!T[c][i-1].up)sc+=3;
+        if(dest.length===0)sc-=1;
+        // skip moves that just shuffle a same-suit run between equal positions
+        if(i>0&&T[c][i-1].up&&T[c][i-1].s===T[c][i].s&&T[c][i-1].r===T[c][i].r+1)continue;
+        if(sc>bs){bs=sc;best={c,i,d}}
+      }
+    }
+  }
+  if(!best){
+    if(stock.length&&!T.some(col=>col.length===0)){const s=document.querySelector('.sp-stock');s&&s.classList.add('sp-hint');toast('No moves — deal from the stock');}
+    else if(stock.length)toast('Fill empty columns, then deal');
+    else toast('No moves left — try Undo');
+    hintTimer=setTimeout(clearHint,1800);return;
+  }
+  const src=tabEl.querySelector(`.sp-card[data-c="${best.c}"][data-i="${best.i}"]`);
+  src&&src.classList.add('sp-hint');
+  const dc=tabEl.querySelector(`.sp-col[data-c="${best.d}"]`);
+  if(T[best.d].length){const t=tabEl.querySelector(`.sp-card[data-c="${best.d}"][data-i="${T[best.d].length-1}"]`);t&&t.classList.add('sp-hint')}
+  else dc&&dc.classList.add('sp-hint');
+  hintTimer=setTimeout(clearHint,1800);
+}
+
+/* ---------- rendering ---------- */
+function layout(){
+  const bw=board.clientWidth-(window.innerWidth<520?6:12);
+  const gap=window.innerWidth<520?3:window.innerWidth<800?5:8;
+  CW=Math.max(24,Math.min(100,Math.floor((bw-9*gap)/10)));
+  CH=Math.round(CW*1.4);
+  board.style.setProperty('--cw',CW+'px');board.style.setProperty('--ch',CH+'px');board.style.setProperty('--gap',gap+'px');
+}
+function cardEl(card,c,i,top){
+  const d=document.createElement('div');
+  d.className='sp-card'+(card.up?'':' back')+(card.up&&(card.s===1||card.s===3)?' red':'');
+  d.style.top=top+'px';
+  if(c!==undefined){d.dataset.c=c;d.dataset.i=i}
+  if(card.up){
+    const r=RANKS[card.r],s=SUITS[card.s];
+    d.innerHTML='<span class="tl">'+r+'<i>'+s+'</i></span><span class="mid">'+s+'</span>';
+  }
+  return d;
+}
+function updateStats(){
+  $('time').textContent=fmt(seconds);$('moves').textContent=moves;$('score').textContent=score;
+  $('best').textContent=Math.max(getBest(),won?score:0);
+  $('btnUndo').disabled=!undo.length||won;
+}
+function render(){
+  clearHint();layout();
+  /* top row: stock + foundations */
+  topEl.innerHTML='';
+  const st=document.createElement('div');st.className='sp-stock';
+  const decks=stock.length/10;
+  if(decks>0){
+    for(let k=0;k<decks;k++){
+      const b=cardEl({up:false});b.style.left=(k*CW*.14)+'px';b.style.top='0px';st.appendChild(b);
+    }
+  }else{st.className='sp-slot'}
+  st.style.gridColumn='1';
+  topEl.appendChild(st);
+  for(let k=0;k<8;k++){
+    const slot=document.createElement('div');slot.className='sp-slot';slot.style.gridColumn=String(3+k);
+    if(k<found.length){
+      const f=cardEl({up:true,s:found[k],r:13},undefined,undefined,-2);
+      f.style.cursor='default';f.style.left='-2px';slot.appendChild(f);
+    }
+    topEl.appendChild(slot);
+  }
+  /* tableau */
+  tabEl.innerHTML='';
+  const availH=Math.max(CH*3,window.innerHeight-tabEl.getBoundingClientRect().top-20);
+  for(let c=0;c<10;c++){
+    const col=document.createElement('div');col.className='sp-col';col.dataset.c=c;
+    const cards=T[c];
+    let nDown=0,nUp=0;cards.forEach(x=>x.up?nUp++:nDown++);
+    let dn=CH*.12,up=CH*.3;
+    const need=dn*nDown+up*Math.max(0,nUp-1)+CH;
+    if(need>availH){const f=Math.max(.5,(availH-CH)/(need-CH));dn*=f;up*=f}
+    let y=0;
+    cards.forEach((card,i)=>{
+      col.appendChild(cardEl(card,c,i,y));
+      y+=card.up?up:dn;
+    });
+    const h=cards.length?y-(cards[cards.length-1].up?up:dn)+CH:CH;
+    col.style.height=h+'px';
+    tabEl.appendChild(col);
+  }
+  updateStats();
+}
+
+/* ---------- input: tap = auto-move, drag = manual ---------- */
+board.addEventListener('pointerdown',e=>{
+  if(won)return;
+  const stockEl=e.target.closest('.sp-stock');
+  if(stockEl){e.preventDefault();dealRow();return}
+  const el=e.target.closest('.sp-card');
+  if(!el||el.dataset.c===undefined)return;
+  const c=+el.dataset.c,i=+el.dataset.i;
+  if(!movable(c,i)){if(T[c][i]&&!T[c][i].up)return;el.classList.add('sp-shake');setTimeout(()=>el.classList.remove('sp-shake'),320);return}
+  const r=el.getBoundingClientRect();
+  drag={c,i,el,sx:e.clientX,sy:e.clientY,gx:e.clientX-r.left,gy:e.clientY-r.top,started:false,ghost:null};
+});
+document.addEventListener('pointermove',e=>{
+  if(!drag)return;
+  if(!drag.started){
+    if(Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<7)return;
+    startDrag();
+  }
+  drag.ghost.style.transform='translate('+(e.clientX-drag.gx)+'px,'+(e.clientY-drag.gy)+'px)';
+  e.preventDefault();
+},{passive:false});
+function startDrag(){
+  drag.started=true;clearHint();
+  const g=document.createElement('div');g.className='sp-ghost';
+  g.style.setProperty('--cw',CW+'px');g.style.setProperty('--ch',CH+'px');
+  const els=[...tabEl.querySelectorAll('.sp-card[data-c="'+drag.c+'"]')].filter(x=>+x.dataset.i>=drag.i);
+  const baseTop=els[0].offsetTop;
+  els.forEach(x=>{
+    const cl=x.cloneNode(true);cl.removeAttribute('data-c');cl.removeAttribute('data-i');
+    cl.style.top=(x.offsetTop-baseTop)+'px';g.appendChild(cl);
+    x.classList.add('sp-hidden');
+  });
+  document.body.appendChild(g);drag.ghost=g;
+}
+function endDrag(e,cancel){
+  if(!drag)return;
+  const d=drag;drag=null;
+  if(!d.started){if(!cancel)autoMove(d.c,d.i,d.el);return}
+  d.ghost.remove();
+  if(cancel){render();return}
+  const cx=e.clientX-d.gx+CW/2;
+  let best=-1,bd=1e9;
+  tabEl.querySelectorAll('.sp-col').forEach(col=>{
+    const r=col.getBoundingClientRect(),dx=Math.abs(r.left+r.width/2-cx);
+    if(dx<bd){bd=dx;best=+col.dataset.c}
+  });
+  if(best>=0&&bd<CW*1.1&&canDrop(d.c,d.i,best))moveRun(d.c,d.i,best);
+  else render();
+}
+document.addEventListener('pointerup',e=>endDrag(e,false));
+document.addEventListener('pointercancel',e=>endDrag(e,true));
+
+/* ---------- controls ---------- */
+$('btnNew').onclick=()=>{if(moves>0&&!won&&!confirm('Start a new game? Current progress will be lost.'))return;newGame()};
+$('btnAgain').onclick=newGame;
+$('btnUndo').onclick=doUndo;
+$('btnHint').onclick=hint;
+$('suits').onchange=e=>{
+  const v=+e.target.value;
+  if(moves>0&&!won&&!confirm('Change difficulty? This starts a new game.')){e.target.value=String(nSuits);return}
+  nSuits=v;localStorage.setItem('sjo_spider_suits',String(v));newGame();
+};
+let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(!drag)render()},120)});
+newGame();
+})();
+</script>
+<script src="sjo-v8-offline.js"></script>
+<script src="sjo-v9-advanced-offline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="sjo-supabase-sync.js"></script>
+<script src="sjo-cloud-backup.js"></script>
+</body>
+</html>

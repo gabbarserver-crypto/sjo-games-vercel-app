@@ -4,76 +4,348 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>SJO Ludo</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="shortcut icon" href="favicon.ico"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#111827">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f4f6fb;color:#111827;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
-.app{max-width:560px;margin:auto;min-height:100vh;padding:16px 14px 28px}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.brand{display:flex;gap:10px;align-items:center}.logo{width:44px;height:44px;border-radius:14px;background:#111827;color:#fff;display:grid;place-items:center;font-size:22px}h1{font-size:21px;margin:0}.sub{font-size:12px;color:#7b8497}
-.icon{width:43px;height:43px;border:1px solid #e0e5ee;background:#fff;border-radius:13px;font-size:19px}
-.hero{background:#111827;color:#fff;border-radius:23px;padding:16px;margin-bottom:13px}.top{display:flex;justify-content:space-between;align-items:center}.eyebrow{text-transform:uppercase;letter-spacing:1.2px;font-size:10px;opacity:.6}.hero h2{margin:3px 0 0;font-size:22px}.turn{background:#ffffff12;border:1px solid #ffffff1d;border-radius:12px;padding:9px 11px;font-weight:800}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}.stat{background:#ffffff10;border:1px solid #ffffff16;border-radius:13px;padding:8px;text-align:center}.stat b{display:block;font-size:17px}.stat span{font-size:10px;opacity:.6}
-.card{background:#fff;border:1px solid #e4e8f0;border-radius:23px;padding:11px;box-shadow:0 12px 34px #1118270d}
-#board{width:min(94vw,480px);aspect-ratio:1;margin:auto;position:relative;border-radius:16px;overflow:hidden;background:#fff;border:2px solid #111827;display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr)}
-.cell{border:1px solid #dfe3eb;background:#fff}.homeR{background:#fee2e2}.homeG{background:#dcfce7}.homeY{background:#fef3c7}.homeB{background:#dbeafe}.path{background:#fff}.center{background:conic-gradient(#ef4444 0 25%,#facc15 25% 50%,#22c55e 50% 75%,#3b82f6 75% 100%);border:2px solid #111827}
-.token{position:absolute;width:8%;aspect-ratio:1;border-radius:50%;border:3px solid #fff;box-shadow:0 3px 7px #11182755;z-index:3;transform:translate(-50%,-50%);display:grid;place-items:center;color:white;font-size:10px;font-weight:900;cursor:pointer}
-.red{background:#ef4444}.green{background:#22c55e}.yellow{background:#eab308}.blue{background:#3b82f6}
-.diceArea{display:flex;align-items:center;justify-content:center;gap:12px;margin:13px 0 4px}.dice{width:62px;height:62px;border:0;border-radius:18px;background:#111827;color:#fff;font-size:34px;font-weight:800;box-shadow:0 8px 18px #11182725}.roll{border:0;border-radius:14px;padding:13px 18px;background:#3157d5;color:#fff;font-weight:800}.roll:disabled{opacity:.45}
-.message{text-align:center;min-height:22px;color:#687286;font-size:12px;padding-top:7px}.rules{text-align:center;color:#8a92a2;font-size:10px;margin-top:8px}
-.mode{display:flex;gap:7px;margin-bottom:10px}.mode button{flex:1;border:0;border-radius:12px;padding:10px;background:#eef1f7;font-weight:800;color:#5d6679}.mode button.active{background:#111827;color:#fff}
-.overlay{position:fixed;inset:0;background:#11182799;display:none;align-items:flex-end;padding:14px}.modal{width:min(530px,100%);background:#fff;border-radius:25px;padding:25px;text-align:center}.emoji{font-size:44px}.modal h2{margin:6px}.modal p{color:#667085}.modal button{width:100%;border:0;border-radius:14px;padding:13px;background:#111827;color:#fff;font-weight:800}
-</style>
-
-<style id="sjo-nav">
+*{box-sizing:border-box}
+body.lu{margin:0;min-height:100vh;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-user-select:none;user-select:none;
+background:
+ repeating-linear-gradient(45deg,rgba(255,255,255,.045) 0 14px,transparent 14px 28px),
+ radial-gradient(800px 500px at 50% 0,#4a5fe0,transparent 70%),
+ linear-gradient(180deg,#2b3ba8,#1c2680)}
 #sjoNav{position:sticky;top:0;z-index:9999;display:flex;justify-content:space-between;align-items:center;
 padding:9px 12px;background:#111827;color:#fff;font:700 13px system-ui;border-radius:0 0 14px 14px;box-shadow:0 5px 18px #11182722}
 #sjoNav a{color:#fff;text-decoration:none;background:#ffffff18;border:1px solid #ffffff25;padding:7px 10px;border-radius:9px}
+
+.lu-app{max-width:520px;margin:0 auto;padding:0 10px 26px}
+.lu-ribbon{margin:0 -10px 10px;padding:12px 10px 13px;text-align:center;font-weight:900;font-size:clamp(22px,7vw,32px);letter-spacing:.3px;color:#ffd21f;
+ background:linear-gradient(180deg,#2d54c9,#1c3aa6);border-bottom:5px solid #f4b400;border-top:3px solid #f4b400;
+ text-shadow:0 3px 0 #0a1a66,0 0 12px #0a1a6688;box-shadow:0 6px 16px #0006;transform:skewX(-6deg);}
+.lu-ribbon span{display:inline-block;transform:skewX(6deg)}
+.lu-mode{display:flex;gap:7px;margin-bottom:10px}
+.lu-mode button{flex:1;border:0;border-radius:12px;padding:10px 4px;font:800 13px system-ui;background:#ffffff22;color:#e6ebff;border:1px solid #ffffff30;cursor:pointer}
+.lu-mode button.on{background:#ffd21f;color:#3a2a00;border-color:#ffd21f;box-shadow:0 3px 0 #b78900}
+.lu-mode .lu-new{flex:0 0 46px;font-size:18px}
+
+.lu-row{display:flex;justify-content:space-between;align-items:center;margin:0 2px}
+.lu-panel{display:flex;align-items:center;gap:6px;min-width:0;transition:opacity .2s}
+.lu-panel.off{visibility:hidden}
+.lu-panel.right{flex-direction:row-reverse}
+.lu-pin{width:30px;height:38px;flex:none;filter:drop-shadow(0 2px 2px #0006)}
+.lu-dicebox{width:58px;height:58px;border-radius:12px;background:#f4d6d6;border:3px solid #fff;box-shadow:0 4px 0 #0003,inset 0 0 0 2px #0002;
+ display:grid;place-items:center;position:relative;padding:0}
+.lu-panel.on .lu-dicebox{background:#fff;cursor:pointer}
+.lu-panel.on .lu-dicebox.dis{cursor:default}
+.lu-dicebox.rolling{animation:luShake .4s}
+@keyframes luShake{20%{transform:rotate(-16deg) scale(1.08)}60%{transform:rotate(14deg) scale(1.08)}}
+.lu-arrow{color:#ffc400;font-size:22px;text-shadow:0 2px 0 #0006;opacity:0;animation:luNudge .7s infinite alternate}
+.lu-panel.on .lu-arrow{opacity:1}
+@keyframes luNudge{to{transform:translateX(5px)}}
+.lu-panel.right .lu-arrow{animation-name:luNudgeR}
+@keyframes luNudgeR{to{transform:translateX(-5px)}}
+.lu-pips{display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);width:38px;height:38px}
+.lu-pips i{width:9px;height:9px;border-radius:50%;background:#1d2a6b;place-self:center}
+.lu-dicebox .lu-hint{font-size:11px;font-weight:900;color:#c2410c}
+
+.lu-boardwrap{margin:8px 0;border-radius:14px;padding:5px;background:linear-gradient(180deg,#ffe28a,#f2a900);box-shadow:0 10px 24px #0007}
+#luBoard{display:block;width:100%;height:auto;aspect-ratio:1;border-radius:9px;background:#fff;touch-action:manipulation}
+.tok{transition:transform .17s ease-out;cursor:default}
+.tok.can{cursor:pointer}
+.tok .halo{display:none}
+.tok.can .halo{display:block;animation:luPulse .7s infinite alternate}
+@keyframes luPulse{from{opacity:.35}to{opacity:1}}
+.lu-msg{text-align:center;min-height:22px;font-size:13px;font-weight:700;color:#e6ebff;padding:2px 6px}
+.lu-stats{text-align:center;font-size:11px;color:#aeb8ee;margin-top:4px}
+
+.overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:14px;z-index:10000}
+.modal{width:min(420px,100%);background:#fff;color:#14231f;border-radius:25px;padding:25px;text-align:center}
+.modal .emoji{font-size:48px}.modal h2{margin:6px}.modal p{color:#66756f;margin:6px 0 16px}
+.modal button{width:100%;border:0;border-radius:14px;padding:13px;background:#1c2680;color:#fff;font-weight:800}
 </style>
+<link rel="stylesheet" href="sjo-ui.css"><script src="sjo-fx.js"></script>
 </head>
-<body><nav id="sjoNav"><span>🎮 SJO Games</span><a href="index.html">⌂ Games</a></nav>
-<div class="app">
-<header><div class="brand"><div class="logo">🎲</div><div><h1>SJO Ludo</h1><div class="sub">Roll • Move • Race</div></div></div><button class="icon" onclick="newGame()">↻</button></header>
-<section class="hero">
-<div class="top"><div><div class="eyebrow">Classic board game</div><h2>Race your tokens home</h2></div><div class="turn" id="turn">Red</div></div>
-<div class="stats"><div class="stat"><b id="players">2</b><span>PLAYERS</span></div><div class="stat"><b id="rolls">0</b><span>ROLLS</span></div><div class="stat"><b id="home">0/4</b><span>HOME</span></div></div>
-</section>
-<section class="card">
-<div class="mode"><button id="p2" class="active" onclick="setPlayers(2)">2 Players</button><button id="p4" onclick="setPlayers(4)">4 Players</button></div>
-<div id="board"></div>
-<div class="diceArea"><button class="dice" id="dice" onclick="rollDice()">⚀</button><button class="roll" id="rollBtn" onclick="rollDice()">ROLL DICE</button></div>
-<div class="message" id="message">Red starts. Roll a 6 to bring a token out.</div>
-<div class="rules">Local/offline multiplayer. Tap a highlighted token after rolling. A 6 gives another turn.</div>
-</section>
+<body class="tp lu"><nav id="sjoNav"><span>🎮 SJO Games</span><a href="index.html">⌂ Games</a></nav>
+<div class="lu-app">
+ <div class="lu-ribbon"><span>Play with Friends</span></div>
+ <div class="lu-mode">
+  <button id="m2" class="on">2 Players</button>
+  <button id="m4">4 Players</button>
+  <button id="mc">🤖 vs Computer</button>
+  <button class="lu-new" id="mNew" title="New game">↻</button>
+ </div>
+ <div class="lu-row" id="rowTop"></div>
+ <div class="lu-boardwrap"><svg id="luBoard" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg"></svg></div>
+ <div class="lu-row" id="rowBot"></div>
+ <div class="lu-msg" id="msg">Red starts. Roll a 6 to bring a pawn out.</div>
+ <div class="lu-stats" id="stats"></div>
 </div>
-<div class="overlay" id="win"><div class="modal"><div class="emoji">🏆</div><h2 id="winTitle">Red wins!</h2><p>All four tokens reached home.</p><button onclick="document.getElementById('win').style.display='none';newGame()">Play Again</button></div></div>
+
+<div class="overlay" id="win"><div class="modal"><div class="emoji">🏆</div><h2 id="winTitle">Red wins!</h2><p>All four pawns reached home.</p><button id="winBtn">Play Again</button></div></div>
 
 <script src="sjo-core.js"></script>
 <script>
-const colors=['red','green','yellow','blue'];
-let players=2,turn=0,dice=0,rollCount=0,gameOver=false,homeCounts=[0,0,0,0];
-let tokens,paths;
-const emoji={red:'🔴',green:'🟢',yellow:'🟡',blue:'🔵'};
-const start=[0,13,26,39];
-function makePaths(){let p=[];for(let k=0;k<4;k++){let a=[];for(let i=0;i<52;i++)a.push((start[k]+i)%52);p.push(a)}return p}
-paths=makePaths();
-function newGame(){turn=0;dice=0;rollCount=0;gameOver=false;homeCounts=[0,0,0,0];tokens=Array.from({length:4},()=>Array(4).fill(-1));document.getElementById('win').style.display='none';document.getElementById('dice').textContent='⚀';update();render();msg('Red starts. Roll a 6 to bring a token out.')}
-function setPlayers(n){players=n;document.getElementById('p2').classList.toggle('active',n===2);document.getElementById('p4').classList.toggle('active',n===4);newGame()}
-function msg(t){document.getElementById('message').textContent=t}
-function update(){document.getElementById('players').textContent=players;document.getElementById('rolls').textContent=rollCount;document.getElementById('home').textContent=homeCounts.slice(0,players).reduce((a,b)=>a+b,0)+'/ '+(players*4);document.getElementById('turn').textContent=colors[turn][0].toUpperCase()+colors[turn].slice(1)}
-function grid(){let b=document.getElementById('board');b.innerHTML='';for(let r=0;r<15;r++)for(let c=0;c<15;c++){let d=document.createElement('div');d.className='cell';if(r<6&&c<6)d.classList.add('homeR');else if(r<6&&c>8)d.classList.add('homeG');else if(r>8&&c<6)d.classList.add('homeB');else if(r>8&&c>8)d.classList.add('homeY');else if(r>=6&&r<=8&&c>=6&&c<=8)d.classList.add('center');else d.classList.add('path');b.appendChild(d)}}
-function posFromIndex(i){let r,c;let ring=[];for(let c0=1;c0<14;c0++)ring.push([6,c0]);for(let r0=7;r0<14;r0++)ring.push([r0,13]);for(let c0=12;c0>=1;c0--)ring.push([13,c0]);for(let r0=12;r0>=7;r0--)ring.push([r0,1]);return ring[i%ring.length]}
-function homePos(color,i){let spots=[[3,3],[3,5],[5,3],[5,5],[3,10],[3,12],[5,10],[5,12],[10,3],[10,5],[12,3],[12,5],[10,10],[10,12],[12,10],[12,12]];return spots[color*4+i]}
-function render(){grid();let board=document.getElementById('board');for(let p=0;p<players;p++)for(let t=0;t<4;t++){let token=document.createElement('div');token.className='token '+colors[p];let st=tokens[p][t],xy;if(st<0){let h=homePos(p,t);xy=[h[1],h[0]]}else if(st>=52){xy=[7+(st-52)*0.7,7]}else{let q=posFromIndex(paths[p][st]);xy=[q[1],q[0]]}token.style.left=((xy[0]+.5)/15*100)+'%';token.style.top=((xy[1]+.5)/15*100)+'%';token.textContent=t+1;if(dice&&p===turn&&canMove(p,t))token.style.outline='4px solid #fff';token.onclick=()=>moveToken(p,t);board.appendChild(token)}update()}
-function canMove(p,t){let st=tokens[p][t];if(st>=52)return false;if(st<0)return dice===6;return st+dice<=57}
-function rollDice(){if(gameOver||dice)return;dice=Math.floor(Math.random()*6)+1;rollCount++;document.getElementById('dice').textContent=['','⚀','⚁','⚂','⚃','⚄','⚅'][dice];let moves=[];for(let t=0;t<4;t++)if(canMove(turn,t))moves.push(t);if(!moves.length){msg('No legal move. '+(dice===6?'Rolling again.':'Next player.'));let six=dice===6;dice=0;render();if(six)setTimeout(()=>{},350);else nextTurn();return}msg(dice===6?'Choose a token. You get another turn after moving.':'Choose a highlighted token.');render()}
-function moveToken(p,t){if(gameOver||p!==turn||!canMove(p,t)||!dice)return;let st=tokens[p][t];if(st<0)tokens[p][t]=0;else tokens[p][t]+=dice;let landed=tokens[p][t];if(landed>=52){homeCounts[p]++;tokens[p][t]=57} // finished token
-// simple capture on shared path
-if(tokens[p][t]<52){let absolute=paths[p][tokens[p][t]];for(let op=0;op<players;op++)if(op!==p)for(let ot=0;ot<4;ot++){let os=tokens[op][ot];if(os>=0&&os<52&&paths[op][os]===absolute){tokens[op][ot]=-1;msg('Captured '+colors[op]+' token!')}}}
-let won=homeCounts[p]>=4;let six=dice===6;dice=0;render();if(won){gameOver=true;document.getElementById('winTitle').textContent=colors[p][0].toUpperCase()+colors[p].slice(1)+' wins!';document.getElementById('win').style.display='flex';window.SJO.record(p===0?'win':'loss',homeCounts[p]*250+rollCount,{players,rollCount,home:homeCounts[p]});window.SJOGamesV9&&window.SJOGamesV9.record('Ludo',p===0?'win':'loss',homeCounts[p]*250+rollCount);return}if(six){msg('🎉 Six! '+colors[p]+' gets another turn.');return}nextTurn()}
-function nextTurn(){turn=(turn+1)%players;dice=0;render();msg(colors[turn][0].toUpperCase()+colors[turn].slice(1)+' turn. Roll the dice.')}
-newGame();
+(function(){
+'use strict';
+const NS='http://www.w3.org/2000/svg';
+const NAMES=['Red','Green','Yellow','Blue'];
+const COL=['#e53935','#43a047','#fdd835','#1e88e5'];
+const DARK=['#a31515','#1f7a24','#b79a00','#0f5bb0'];
+const LIGHT=['#ffd9d6','#d7f0d8','#fff6bf','#d6e9fb'];
+const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------- geometry ---------- */
+const rot=([r,c])=>[c,14-r];                       // 90° clockwise
+const q1=[[6,1],[6,2],[6,3],[6,4],[6,5],[5,6],[4,6],[3,6],[2,6],[1,6],[0,6],[0,7],[0,8]];
+let RING=[],cur=q1;
+for(let k=0;k<4;k++){RING.push(...cur);cur=cur.map(rot)}
+let hc=[[7,1],[7,2],[7,3],[7,4],[7,5]];
+const HOMECOL=[];for(let k=0;k<4;k++){HOMECOL.push(hc);hc=hc.map(rot)}
+const YARDORG=[[0,0],[0,9],[9,9],[9,0]];            // red TL, green TR, yellow BR, blue BL
+const YARD=YARDORG.map(([r,c])=>[[c+2,r+2],[c+4,r+2],[c+2,r+4],[c+4,r+4]]); // [x,y] centres
+const isSafe=i=>i%13===0||i%13===8;
+const START=k=>13*k;
+
+/* ---------- state ---------- */
+let mode='2';                 // '2' | '4' | 'cpu'
+let act=[0,2],cpu=-1;         // active player ids, cpu player id
+let ti=0,turn=0,dice=0,busy=false,over=false,rolls=0,tokens=[];
+let tokEls=[];
+
+function setMode(m){
+  mode=m;
+  act=m==='4'?[0,1,2,3]:[0,2];
+  cpu=m==='cpu'?2:-1;
+  ['2','4','cpu'].forEach(x=>$({'2':'m2','4':'m4','cpu':'mc'}[x]).classList.toggle('on',x===m));
+  newGame();
+}
+function pname(p){return mode==='cpu'?(p===0?'You':'CPU'):NAMES[p]}
+
+/* ---------- drawing ---------- */
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent&&parent.appendChild(e);return e}
+function pawnShape(g,p,scale){
+  const s=el('g',{transform:'scale('+scale+')'},g);
+  el('ellipse',{cx:0,cy:.2,rx:.4,ry:.3,fill:'#fff',stroke:'#0005','stroke-width':.04},s);
+  el('ellipse',{cx:0,cy:.2,rx:.4,ry:.3,fill:'none',stroke:'#0002','stroke-width':.08,transform:'translate(0,.04)'},s);
+  el('circle',{cx:0,cy:-.02,r:.27,fill:COL[p],stroke:DARK[p],'stroke-width':.05},s);
+  el('circle',{cx:-.09,cy:-.11,r:.08,fill:'#fff',opacity:.65},s);
+}
+function drawBoard(){
+  const svg=$('luBoard');svg.innerHTML='';
+  el('rect',{x:0,y:0,width:15,height:15,fill:'#fff'},svg);
+  /* yards */
+  for(let p=0;p<4;p++){
+    const [r0,c0]=YARDORG[p];
+    el('rect',{x:c0,y:r0,width:6,height:6,fill:COL[p]},svg);
+    el('rect',{x:c0+1,y:r0+1,width:4,height:4,rx:.5,fill:'#fff',stroke:DARK[p],'stroke-width':.06,opacity:act.includes(p)?1:.55},svg);
+    YARD[p].forEach(([x,y])=>{el('circle',{cx:x,cy:y,r:.62,fill:LIGHT[p],stroke:COL[p],'stroke-width':.12},svg);});
+    const nm=el('text',{x:c0+3,y:r0===0?.62:14.5,'text-anchor':'middle','font-size':.5,'font-weight':800,fill:'#fff','font-family':'system-ui,sans-serif'},svg);
+    if(act.includes(p))nm.textContent=pname(p);
+  }
+  /* track + arms */
+  const cell=(r,c,fill)=>el('rect',{x:c,y:r,width:1,height:1,fill,stroke:'#8a8a8a','stroke-width':.04},svg);
+  for(let r=0;r<15;r++)for(let c=0;c<15;c++){
+    const inArm=(r>=6&&r<=8)||(c>=6&&c<=8),inCenter=r>=6&&r<=8&&c>=6&&c<=8;
+    if(inArm&&!inCenter)cell(r,c,'#fff');
+  }
+  for(let p=0;p<4;p++)HOMECOL[p].forEach(([r,c])=>cell(r,c,COL[p]));
+  for(let p=0;p<4;p++){const [r,c]=RING[START(p)];cell(r,c,COL[p])}
+  const star=(r,c,fill)=>{const t=el('text',{x:c+.5,y:r+.5,'text-anchor':'middle','dominant-baseline':'central','font-size':.78,fill,'font-family':'system-ui,sans-serif'},svg);t.textContent='★'};
+  RING.forEach(([r,c],i)=>{if(i%13===8)star(r,c,'#9a9a9a')});
+  for(let p=0;p<4;p++){const [r,c]=RING[START(p)];star(r,c,'#fff')}
+  /* entry arrows */
+  [[7,0,'→',0],[0,7,'↓',1],[7,14,'←',2],[14,7,'↑',3]].forEach(([r,c,ch,p])=>{
+    const t=el('text',{x:c+.5,y:r+.5,'text-anchor':'middle','dominant-baseline':'central','font-size':.8,'font-weight':900,fill:COL[p],'font-family':'system-ui,sans-serif'},svg);t.textContent=ch});
+  /* centre */
+  const tri=(pts,f)=>el('polygon',{points:pts,fill:f,stroke:'#fff','stroke-width':.05},svg);
+  tri('6,6 7.5,7.5 6,9',COL[0]);tri('6,6 9,6 7.5,7.5',COL[1]);tri('9,6 9,9 7.5,7.5',COL[2]);tri('6,9 9,9 7.5,7.5',COL[3]);
+  el('rect',{x:0,y:0,width:15,height:15,fill:'none',stroke:'#1b2a6b','stroke-width':.12},svg);
+  el('g',{id:'luTok'},svg);
+}
+
+/* ---------- token positions ---------- */
+function cellOf(p,t){
+  const q=tokens[p][t];
+  if(q<0)return {x:YARD[p][t][0],y:YARD[p][t][1],key:'y'+p+t};
+  if(q<=50){const i=(START(p)+q)%52,[r,c]=RING[i];return {x:c+.5,y:r+.5,key:'r'+i}}
+  if(q<=55){const [r,c]=HOMECOL[p][q-51];return {x:c+.5,y:r+.5,key:'h'+p+q}}
+  return {x:7.5,y:7.5,key:'c'+p,fin:true};
+}
+function buildTokens(){
+  const g=$('luTok');g.innerHTML='';tokEls=[];
+  act.forEach(p=>{tokEls[p]=[];for(let t=0;t<4;t++){
+    const tg=el('g',{class:'tok'},g);
+    el('circle',{class:'halo',cx:0,cy:.05,r:.52,fill:'none',stroke:'#fff','stroke-width':.09,'stroke-dasharray':'.18 .14'},tg);
+    const inner=el('g',{},tg);pawnShape(inner,p,1);
+    tg.addEventListener('click',()=>humanPick(p,t));
+    tokEls[p][t]=tg;
+  }});
+  layoutTokens();
+}
+function layoutTokens(){
+  const groups={};
+  act.forEach(p=>{for(let t=0;t<4;t++){const c=cellOf(p,t);(groups[c.key]=groups[c.key]||[]).push([p,t,c])}});
+  const movable=movables();
+  for(const k in groups){
+    const arr=groups[k],n=arr.length;
+    arr.forEach(([p,t,c],j)=>{
+      let dx=0,dy=0,sc=1;
+      if(!k.startsWith('y')&&n>1){
+        sc=n>2?.62:.74;
+        if(c.fin){dx=(p-1.5)*.34;dy=0}
+        else{const a=j/n*Math.PI*2-Math.PI/2;dx=Math.cos(a)*.24;dy=Math.sin(a)*.2}
+      }
+      const g=tokEls[p][t];
+      g.style.transform='translate('+(c.x+dx)+'px,'+(c.y+dy-.12)+'px) scale('+sc+')';
+      g.classList.toggle('can',!over&&!busy&&dice>0&&p===turnPlayer()&&!isCpu(p)&&movable.includes(t));
+      g.parentNode.appendChild(g);                 // keep later tokens on top
+    });
+  }
+  // movable tokens above others
+  if(dice>0&&!busy)movables().forEach(t=>{const g=tokEls[turnPlayer()][t];g.parentNode.appendChild(g)});
+}
+
+/* ---------- panels ---------- */
+function pinSvg(p){return '<svg class="lu-pin" viewBox="0 0 30 38"><path d="M15 36C15 36 2 22 2 13a13 13 0 0 1 26 0c0 9-13 23-13 23z" fill="'+COL[p]+'" stroke="#fff" stroke-width="3"/><circle cx="15" cy="13" r="5.5" fill="#fff"/></svg>'}
+function pips(n){
+  const map={1:[4],2:[2,6],3:[2,4,6],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]}[n]||[];
+  let h='';for(let i=0;i<9;i++)h+=map.includes(i)?'<i></i>':'<span></span>';
+  return '<div class="lu-pips">'+h+'</div>';
+}
+function buildPanels(){
+  const mk=(p,right)=>{
+    const d=document.createElement('div');d.className='lu-panel'+(right?' right':'');d.id='pn'+p;
+    d.innerHTML=pinSvg(p)+'<button class="lu-dicebox" id="db'+p+'" aria-label="Roll dice"></button><div class="lu-arrow">'+(right?'▶':'◀')+'</div>';
+    return d;
+  };
+  $('rowTop').innerHTML='';$('rowBot').innerHTML='';
+  $('rowTop').append(mk(0,false),mk(1,true));
+  $('rowBot').append(mk(3,false),mk(2,true));
+  [0,1,2,3].forEach(p=>$('db'+p).addEventListener('click',()=>{if(p===turnPlayer()&&!isCpu(p))roll()}));
+}
+function updatePanels(shown){
+  for(let p=0;p<4;p++){
+    const pn=$('pn'+p),db=$('db'+p);
+    pn.classList.toggle('off',!act.includes(p));
+    const on=!over&&p===turnPlayer();
+    pn.classList.toggle('on',on);
+    if(on){
+      db.innerHTML=dice>0?pips(dice):(isCpu(p)?'<span class="lu-hint">CPU</span>':'<span class="lu-hint">ROLL</span>');
+      db.classList.toggle('dis',busy||dice>0||isCpu(p));
+    }else db.innerHTML='';
+  }
+}
+function setStats(){
+  const home=act.map(p=>tokens[p].filter(q=>q===56).length);
+  $('stats').textContent='Rolls: '+rolls+'  •  Home: '+act.map((p,i)=>pname(p)+' '+home[i]+'/4').join('  ');
+}
+
+/* ---------- rules ---------- */
+const turnPlayer=()=>act[ti];
+const isCpu=p=>p===cpu;
+function movables(){
+  const p=turnPlayer(),out=[];
+  if(p===undefined||!dice)return out;
+  for(let t=0;t<4;t++){const q=tokens[p][t];if(q<0?dice===6:q+dice<=56)out.push(t)}
+  return out;
+}
+function msg(t){$('msg').textContent=t}
+function newGame(){
+  ti=0;turn=0;dice=0;busy=false;over=false;rolls=0;
+  tokens=Array.from({length:4},()=>Array(4).fill(-1));
+  $('win').style.display='none';
+  drawBoard();buildPanels();buildTokens();updatePanels();setStats();
+  msg(pname(turnPlayer())+(mode==='cpu'?' start. Roll a 6 to bring a pawn out.':' starts. Roll a 6 to bring a pawn out.'));
+  maybeCpu();
+}
+async function roll(){
+  if(busy||over||dice)return;
+  busy=true;
+  const p=turnPlayer(),db=$('db'+p);
+  db.classList.remove('rolling');void db.offsetWidth;db.classList.add('rolling');
+  for(let i=0;i<5;i++){db.innerHTML=pips(1+Math.floor(Math.random()*6));await sleep(70)}
+  dice=1+Math.floor(Math.random()*6);rolls++;
+  const mv=movables();
+  busy=false;updatePanels();setStats();layoutTokens();
+  if(!mv.length){
+    msg(pname(p)+' rolled '+dice+' — no move.');
+    await sleep(900);dice=0;nextTurn();return;
+  }
+  if(isCpu(p)){await sleep(550);cpuPick(mv);return}
+  if(mv.length===1){msg(pname(p)+' rolled '+dice+'.');await sleep(350);doMove(p,mv[0]);return}
+  msg(pname(p)+' rolled '+dice+' — tap a glowing pawn.');
+}
+function humanPick(p,t){
+  if(busy||over||!dice||p!==turnPlayer()||isCpu(p))return;
+  if(!movables().includes(t))return;
+  doMove(p,t);
+}
+async function doMove(p,t){
+  busy=true;layoutTokens();
+  const d=dice;let q=tokens[p][t];
+  if(q<0){tokens[p][t]=0;layoutTokens();await sleep(260)}
+  else for(let s=0;s<d;s++){tokens[p][t]++;layoutTokens();await sleep(170)}
+  q=tokens[p][t];
+  let extra=d===6,captured=false;
+  if(q<=50){
+    const abs=(START(p)+q)%52;
+    if(!isSafe(abs)){
+      for(const op of act){if(op===p)continue;
+        for(let ot=0;ot<4;ot++){const oq=tokens[op][ot];
+          if(oq>=0&&oq<=50&&(START(op)+oq)%52===abs){tokens[op][ot]=-1;captured=true}}}
+    }
+  }
+  if(captured){extra=true;msg('💥 '+pname(p)+' captured a pawn!')}
+  if(q===56){extra=true;msg('🏠 '+pname(p)+' got a pawn home!')}
+  dice=0;busy=false;layoutTokens();updatePanels();setStats();
+  if(tokens[p].every(x=>x===56)){finish(p);return}
+  if(extra){if(!captured&&q!==56)msg('🎉 '+pname(p)+' rolled a 6 — roll again!');await sleep(500);afterTurn();return}
+  nextTurn();
+}
+function nextTurn(){
+  dice=0;ti=(ti+1)%act.length;updatePanels();layoutTokens();
+  {const q=turnPlayer();msg(mode==='cpu'?(q===0?'Your turn — tap the dice.':'CPU is thinking…'):pname(q)+"'s turn — tap the dice.")}
+  maybeCpu();
+}
+function afterTurn(){updatePanels();layoutTokens();maybeCpu()}
+function maybeCpu(){const p=turnPlayer();if(!over&&isCpu(p)&&!busy&&!dice)setTimeout(()=>{if(!over&&!busy&&!dice&&isCpu(turnPlayer()))roll()},800)}
+function cpuPick(mv){
+  const p=turnPlayer();let best=mv[0],bs=-1e9;
+  for(const t of mv){
+    const q=tokens[p][t];let s=q;const nq=q<0?0:q+dice;
+    if(q<0)s+=50;
+    if(nq===56)s+=90;else if(nq>=51)s+=30;
+    if(nq<=50){
+      const abs=(START(p)+nq)%52;
+      if(isSafe(abs))s+=18;
+      for(const op of act){if(op===p)continue;for(let ot=0;ot<4;ot++){const oq=tokens[op][ot];
+        if(oq>=0&&oq<=50){const oa=(START(op)+oq)%52;
+          if(oa===abs&&!isSafe(abs))s+=100;
+          const dist=(abs-oa+52)%52;if(dist>0&&dist<=6&&!isSafe(abs))s-=12}}}
+    }
+    if(q>=0&&q<=50&&isSafe((START(p)+q)%52))s-=6;
+    s+=Math.random();
+    if(s>bs){bs=s;best=t}
+  }
+  doMove(p,best);
+}
+function finish(p){
+  over=true;updatePanels();layoutTokens();
+  const you=p===0;
+  $('winTitle').textContent=(mode==='cpu'?(p===0?'You win!':'Computer wins!'):NAMES[p]+' wins!');
+  setTimeout(()=>{$('win').style.display='flex'},450);
+  try{window.SJO.record(you?'win':'loss',1000+Math.max(0,300-rolls),{mode,rolls,winner:p});
+      window.SJOGamesV9&&window.SJOGamesV9.record&&window.SJOGamesV9.record('Ludo',you?'win':'loss',1000)}catch(e){}
+}
+
+$('m2').onclick=()=>setMode('2');$('m4').onclick=()=>setMode('4');$('mc').onclick=()=>setMode('cpu');
+$('mNew').onclick=newGame;$('winBtn').onclick=newGame;
+setMode('2');
+})();
 </script>
 <script src="sjo-v8-offline.js"></script>
 <script src="sjo-v9-advanced-offline.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="sjo-supabase-sync.js"></script>
+<script src="sjo-cloud-backup.js"></script>
 </body>
 </html>

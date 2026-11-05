@@ -6,7 +6,7 @@
 'use strict';
 const KEY='sjo_games_v9';
 const V8='sjo_games_v8';
-const games=['Sudoku','Tic-Tac-Toe','Art Block Puzzle','Ludo','Bubble Shooter','Teen Patti'];
+const games=['Sudoku','Tic-Tac-Toe','Art Block Puzzle','Ludo','Bubble Shooter','Teen Patti','Spider Solitaire'];
 
 const defaults={
  version:9,
@@ -65,7 +65,7 @@ const achievementDefs=[
  ['hundred-games','Veteran','Play 100 games','🎖️',500,200],
  ['streak-5','Hot Streak','Reach 5 wins in a row','🔥',150,75],
  ['streak-10','On Fire','Reach 10 wins in a row','🔥',300,150],
- ['all-six','All-Rounder','Play all six games','🌟',250,100],
+ ['all-six','All-Rounder','Play all seven games','🌟',250,100],
  ['master-one','Mastery','Reach Gold mastery in any game','👑',300,150],
  ['coins-5000','Rich Player','Own 5,000 coins','🪙',300,150],
  ['level-10','Level 10','Reach level 10','⭐',500,250]
@@ -94,7 +94,7 @@ function checkAchievements(q){
   const gold=games.some(g=>q.mastery[g]&&masteryLevel(q.mastery[g])>=2);
   const checks={
    'first-win':q.wins>=1,'ten-wins':q.wins>=10,'fifty-games':q.games>=50,'hundred-games':q.games>=100,
-   'streak-5':q.bestStreak>=5,'streak-10':q.bestStreak>=10,'all-six':playedGames>=6,
+   'streak-5':q.bestStreak>=5,'streak-10':q.bestStreak>=10,'all-six':playedGames>=7,
    'master-one':gold,'coins-5000':q.coins>=5000,'level-10':q.level>=10
   };
   achievementDefs.forEach(a=>{
@@ -175,6 +175,7 @@ function render(){
   document.getElementById('v9players').innerHTML='<h3>👥 Local Players</h3><div class="sjo9-list">'+Object.values(x.players).map(z=>`<div class="sjo9-item">${z.avatar} <b>${z.name}</b><br>Level ${z.level} • ${z.xp} XP • ${z.wins} wins<br><button onclick="SJOGamesV9.switchPlayer('${z.id}')">${z.id===x.activeProfile?'Active':'Switch'}</button> <button onclick="SJOGamesV9.deletePlayer('${z.id}')">Delete</button></div>`).join('')+'</div><button onclick="SJOGamesV9.createPlayer(prompt('Player name'))">➕ Add Player</button>';
 }
 function panel(){
+  if(!/\/(index\.html)?$/.test(location.pathname))return; 
  if(document.getElementById('sjo-v9-panel'))return;
  const s=document.createElement('style');s.textContent=`
  #sjo-v9-panel{margin:16px auto;max-width:1150px;padding:18px;border-radius:22px;background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;font-family:system-ui;box-shadow:0 15px 45px rgba(0,0,0,.22)}

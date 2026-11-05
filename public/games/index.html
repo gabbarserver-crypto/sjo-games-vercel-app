@@ -1,6 +1,7 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SJO Games V6</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="shortcut icon" href="favicon.ico"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#111827">
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4f6fb;color:#111827;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
 .wrap{max-width:1080px;margin:auto;padding:18px 15px 45px}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
@@ -36,8 +37,22 @@ footer{text-align:center;color:#8b94a3;font-size:10px;margin-top:23px}
 .modal-actions button{border:0;border-radius:12px;padding:11px;font-weight:900}
 .danger{background:#fee2e2;color:#991b1b}.primary{background:#111827;color:#fff}
 @media(max-width:620px){.modal-actions{grid-template-columns:1fr}}
-</style></head><body><main class="wrap">
-<header><div class="brand"><div class="logo">🎮</div><div><h1>SJO Games</h1><div class="sub">Play • Level Up • Collect • Track • Track</div></div></div><button class="iconbtn" id="theme">☾</button></header><div class="v5bar">
+
+/* ===== Desktop two-column layout: dashboard left, games right ===== */
+.layout{display:block}
+@media(min-width:1024px){
+  .wrap{max-width:1440px}
+  .layout{display:grid;grid-template-columns:390px minmax(0,1fr);gap:22px;align-items:start}
+  .side{position:sticky;top:14px;max-height:calc(100vh - 28px);overflow-y:auto;padding-right:4px;scrollbar-width:thin}
+  .side #sjo-v8-panel,.side #sjo-v9-panel{margin:0 0 13px!important;max-width:none!important}
+  .side .profile,.side .tools,.side .challenge,.side .notice,.side .v5bar{margin-top:0}
+  .side .v5bar{flex-wrap:wrap;overflow:visible}
+  .content .grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+  .content .search{margin-top:0}
+}
+</style><link rel="stylesheet" href="sjo-theme.css"></head><body data-view="games"><main class="wrap">
+<header><div class="brand"><div class="logo">🎮</div><div><h1>SJO Games</h1><div class="sub">Play • Level Up • Collect • Track • Track</div></div></div><button class="iconbtn" id="theme">☾</button></header><div class="layout"><aside class="side" id="side">
+<div class="v5bar">
 <button class="v5btn" id="settingsBtn">⚙️ Settings</button>
 <button class="v5btn" id="exportBtn">⬇️ Backup Data</button>
 <button class="v5btn" id="importBtn">⬆️ Restore Data</button>
@@ -55,34 +70,51 @@ footer{text-align:center;color:#8b94a3;font-size:10px;margin-top:23px}
 
 <section class="challenge"><div class="ctop"><div><div class="reward">🎁 DAILY CHALLENGE</div><h3>Play any 2 games today</h3><p id="dailyText">Progress: 0 / 2 • Reward: +25 coins</p></div><div style="font-size:28px">🔥</div></div></section>
 
-<div class="search"><input id="search" placeholder="🔎 Search games..."><select id="filter"><option value="all">All Games</option><option value="fav">Favorites</option></select></div>
+</aside>
+<div class="content">
+<div class="search"><input id="search" placeholder="Search games..."><select id="filter"><option value="all">All Games</option><option value="fav">Favorites</option></select></div>
 <div class="section-title">RECENTLY PLAYED</div><div id="recent" class="recent"></div>
 <div class="section-title">ALL GAMES</div><section class="grid"><article class="game-card" data-name="sudoku">
 <button class="fav" data-file="sudoku.html">☆</button>
 <a href="sudoku.html" class="playlink" data-file="sudoku.html">
-<div class="game-icon">🧩</div><div class="tag">Logic Grid</div><h2>Sudoku</h2>
+<div class="game-icon"><img src="icons/sudoku.png" alt="" loading="lazy" onerror="this.parentNode.textContent='🧩'"></div><div class="tag">Logic Grid</div><h2>Sudoku</h2>
 <p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="tic-tac-toe">
 <button class="fav" data-file="tic-tac-toe.html">☆</button>
 <a href="tic-tac-toe.html" class="playlink" data-file="tic-tac-toe.html">
-<div class="game-icon">❌⭕</div><div class="tag">Classic Duel</div><h2>Tic-Tac-Toe</h2>
+<div class="game-icon"><img src="icons/tic-tac-toe.png" alt="" loading="lazy" onerror="this.parentNode.textContent='❌⭕'"></div><div class="tag">Classic Duel</div><h2>Tic-Tac-Toe</h2>
 <p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="art block puzzle">
 <button class="fav" data-file="art-block-puzzle.html">☆</button>
 <a href="art-block-puzzle.html" class="playlink" data-file="art-block-puzzle.html">
-<div class="game-icon">🎨</div><div class="tag">Block Puzzle</div><h2>Art Block Puzzle</h2>
+<div class="game-icon"><img src="icons/art-block-puzzle.png" alt="" loading="lazy" onerror="this.parentNode.textContent='🎨'"></div><div class="tag">Block Puzzle</div><h2>Art Block Puzzle</h2>
 <p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="ludo">
 <button class="fav" data-file="ludo.html">☆</button>
 <a href="ludo.html" class="playlink" data-file="ludo.html">
-<div class="game-icon">🎲</div><div class="tag">Board Race</div><h2>Ludo</h2>
+<div class="game-icon"><img src="icons/ludo.png" alt="" loading="lazy" onerror="this.parentNode.textContent='🎲'"></div><div class="tag">Board Race</div><h2>Ludo</h2>
+<p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="snake and ladder">
+<button class="fav" data-file="snake-ladder.html">☆</button>
+<a href="snake-ladder.html" class="playlink" data-file="snake-ladder.html">
+<div class="game-icon"><img src="icons/snake-ladder.png" alt="" loading="lazy" onerror="this.parentNode.textContent='🐍'"></div><div class="tag">Board Race</div><h2>Snake &amp; Ladder</h2>
 <p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="bubble shooter">
 <button class="fav" data-file="bubble-shooter.html">☆</button>
 <a href="bubble-shooter.html" class="playlink" data-file="bubble-shooter.html">
-<div class="game-icon">🫧</div><div class="tag">Match 3</div><h2>Bubble Shooter</h2>
+<div class="game-icon"><img src="icons/bubble-shooter.png" alt="" loading="lazy" onerror="this.parentNode.textContent='🫧'"></div><div class="tag">Match 3</div><h2>Bubble Shooter</h2>
 <p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="teen patti">
 <button class="fav" data-file="teen-patti.html">☆</button>
 <a href="teen-patti.html" class="playlink" data-file="teen-patti.html">
-<div class="game-icon">🃏</div><div class="tag">Card Game</div><h2>Teen Patti</h2>
+<div class="game-icon"><img src="icons/teen-patti.png" alt="" loading="lazy" onerror="this.parentNode.textContent='🃏'"></div><div class="tag">Card Game</div><h2>Teen Patti</h2>
+<p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article><article class="game-card" data-name="spider solitaire">
+<button class="fav" data-file="spider-solitaire.html">☆</button>
+<a href="spider-solitaire.html" class="playlink" data-file="spider-solitaire.html">
+<div class="game-icon"><img src="icons/spider-solitaire.png" alt="" loading="lazy" onerror="this.parentNode.textContent='🕷️'"></div><div class="tag">Card Game</div><h2>Spider Solitaire</h2>
 <p>Offline • Mobile friendly</p><div class="play">PLAY NOW →</div></a></article></section>
+</div></div>
 <footer>Offline-first • All profile, XP, coins and achievements stay on this device</footer></main>
+<nav class="bottombar" id="bottombar" aria-label="Main navigation">
+  <button type="button" data-nav="profile"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7"/></svg><span>Profile</span></button>
+  <button type="button" data-nav="games" class="on"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 10v5M4.5 12.5h5"/><circle cx="16" cy="11.5" r="1"/><circle cx="18.5" cy="14" r="1"/></svg><span>Games</span></button>
+  <button type="button" data-nav="exit" class="exit"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span>Exit</span></button>
+</nav>
+
 
 <div class="modalbg" id="modal"><div class="modal"><h2 id="modalTitle">Local Profile</h2><div id="modalBody"></div><button class="close" onclick="closeModal()">Close</button></div></div>
 
@@ -97,7 +129,7 @@ footer{text-align:center;color:#8b94a3;font-size:10px;margin-top:23px}
 <script src="sjo-core.js"></script>
 
 <script>
-const games=[{"name": "Sudoku", "icon": "🧩", "tag": "Logic Grid", "file": "sudoku.html"}, {"name": "Tic-Tac-Toe", "icon": "❌⭕", "tag": "Classic Duel", "file": "tic-tac-toe.html"}, {"name": "Art Block Puzzle", "icon": "🎨", "tag": "Block Puzzle", "file": "art-block-puzzle.html"}, {"name": "Ludo", "icon": "🎲", "tag": "Board Race", "file": "ludo.html"}, {"name": "Bubble Shooter", "icon": "🫧", "tag": "Match 3", "file": "bubble-shooter.html"}, {"name": "Teen Patti", "icon": "🃏", "tag": "Card Game", "file": "teen-patti.html"}];
+const games=[{"name": "Sudoku", "icon": "🧩", "tag": "Logic Grid", "file": "sudoku.html"}, {"name": "Tic-Tac-Toe", "icon": "❌⭕", "tag": "Classic Duel", "file": "tic-tac-toe.html"}, {"name": "Art Block Puzzle", "icon": "🎨", "tag": "Block Puzzle", "file": "art-block-puzzle.html"}, {"name": "Ludo", "icon": "🎲", "tag": "Board Race", "file": "ludo.html"}, {"name": "Snake & Ladder", "icon": "🐍", "tag": "Board Race", "file": "snake-ladder.html"}, {"name": "Bubble Shooter", "icon": "🫧", "tag": "Match 3", "file": "bubble-shooter.html"}, {"name": "Teen Patti", "icon": "🃏", "tag": "Card Game", "file": "teen-patti.html"}, {"name": "Spider Solitaire", "icon": "🕷️", "tag": "Card Game", "file": "spider-solitaire.html"}];
 const K='sjo_v4_';
 let data=JSON.parse(localStorage.getItem(K+'data')||'null')||{name:'Player',avatar:'🎮',xp:0,coins:100,played:0,wins:0,favs:[],recent:[],badges:[],daily:0};
 const avatars=['🎮','😎','🦊','🐼','🚀','⭐','👑','🤖'];
@@ -197,8 +229,50 @@ if(installBtn) installBtn.onclick=async()=>{
 };
 if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 
-</script><script src="sjo-v8-offline.js"></script>
+</script><script>
+/* Move the V8/V9 "Player Center" panels (injected at top of <body> by their scripts) into the left sidebar */
+(function(){
+  var ids=['sjo-v9-panel','sjo-v8-panel'];
+  function mv(){
+    var side=document.getElementById('side'); if(!side) return;
+    ids.forEach(function(id){
+      var el=document.getElementById(id);
+      if(el && el.parentNode!==side) side.insertBefore(el, side.firstChild);
+    });
+  }
+  new MutationObserver(mv).observe(document.body,{childList:true});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(mv,400)});
+})();
+</script>
+<script>
+/* Mobile bottom bar: Profile (dashboard) / Games / Exit */
+(function(){
+  var bar=document.getElementById('bottombar'); if(!bar) return;
+  function setView(v){
+    document.body.dataset.view=v;
+    bar.querySelectorAll('[data-nav]').forEach(function(b){b.classList.toggle('on',b.dataset.nav===v)});
+    window.scrollTo({top:0});
+  }
+  function askExit(){
+    openModal('🚪 Exit SJO Games','<p style="margin:0 0 14px;color:#5b6478">You will be signed out on this device. Your progress is backed up to your account automatically.</p>'+
+      '<button id="exitYes" style="width:100%;border:0;border-radius:14px;padding:13px;font-weight:900;font-size:15px;background:#dc2626;color:#fff">Sign out &amp; exit</button>');
+    document.getElementById('exitYes').onclick=async function(){
+      this.disabled=true; this.textContent='Saving…';
+      try{ if(window.SJOCloud) await window.SJOCloud.syncNow(); }catch(e){}
+      if(window.SJO_SIGNOUT) await window.SJO_SIGNOUT(); else location.href='auth.html';
+    };
+  }
+  bar.querySelectorAll('[data-nav]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var n=b.dataset.nav;
+      if(n==='exit') askExit(); else setView(n);
+    });
+  });
+})();
+</script>
+<script src="sjo-v8-offline.js"></script>
 <script src="sjo-v9-advanced-offline.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="sjo-supabase-sync.js"></script>
+<script src="sjo-cloud-backup.js"></script>
 </body></html>

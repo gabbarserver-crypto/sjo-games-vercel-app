@@ -123,7 +123,7 @@ function checkAchievements(p){
   const checks={
    'first-win':p.wins>=1,'ten-games':p.totalGames>=10,'ten-wins':p.wins>=10,
    'fifty-games':p.totalGames>=50,'streak-5':p.bestStreak>=5,'streak-10':p.bestStreak>=10,
-   'coin-1000':p.coins>=1000,'level-5':p.level>=5,'all-rounder':games>=6,'master':p.wins>=50
+   'coin-1000':p.coins>=1000,'level-5':p.level>=5,'all-rounder':games>=7,'master':p.wins>=50
   };
   achievements.forEach(a=>{
     if(checks[a[0]]&&!p.achievements.includes(a[0])){
@@ -183,6 +183,7 @@ function toast(msg){
   setTimeout(()=>t.remove(),3000);
 }
 function panel(){
+  if(!/\/(index\.html)?$/.test(location.pathname))return; 
   if(document.getElementById('sjo-v8-panel'))return;
   const st=document.createElement('style');st.textContent=`
   :root{--sjo8-a:#8b5cf6;--sjo8-b:#111827;--sjo8-card:rgba(255,255,255,.08)}

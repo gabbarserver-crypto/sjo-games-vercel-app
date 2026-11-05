@@ -35,10 +35,24 @@
     "offline": true
   },
   {
+    "name": "Snake & Ladder",
+    "icon": "🐍",
+    "category": "Board Race",
+    "file": "snake-ladder.html",
+    "offline": true
+  },
+  {
     "name": "Teen Patti",
     "icon": "🃏",
     "category": "Card Game",
     "file": "teen-patti.html",
+    "offline": true
+  },
+  {
+    "name": "Spider Solitaire",
+    "icon": "🕷️",
+    "category": "Card Game",
+    "file": "spider-solitaire.html",
     "offline": true
   }
 ]

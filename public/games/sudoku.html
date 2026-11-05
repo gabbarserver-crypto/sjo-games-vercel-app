@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#111827">
 <title>SJO Sudoku</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="shortcut icon" href="favicon.ico"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#111827">
 <style>
 :root{--ink:#111827;--muted:#7b8498;--soft:#f5f7fb;--line:#dce2ec;--accent:#3157d5;--accent2:#e8edff;--danger:#d64545}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#eef2ff 0,#f7f8fc 34%,#f7f8fc 100%);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink)}
@@ -30,6 +31,20 @@ h1{font-size:21px;margin:0;letter-spacing:-.4px}.sub{font-size:12px;color:var(--
 .bottom{display:flex;gap:8px;margin-top:12px}.bottom button{flex:1;height:42px;border:1px solid #e0e5ee;background:#fff;border-radius:13px;font-weight:700;color:#5f687c}
 .overlay{position:fixed;inset:0;background:#11182799;display:none;align-items:flex-end;justify-content:center;padding:14px;z-index:5}.modal{width:min(520px,100%);background:#fff;border-radius:25px;padding:25px;text-align:center;box-shadow:0 -8px 40px #0003}.trophy{font-size:44px}.modal h2{margin:7px 0;font-size:25px}.modal p{color:var(--muted);margin:0 0 18px}.modal button{width:100%;height:48px;border:0;border-radius:14px;background:var(--ink);color:#fff;font-weight:800}
 @media(min-width:560px){.app{padding-top:28px}.keypad button{height:50px}}
+
+/* difficulty picker */
+#picker{align-items:center;z-index:50;background:#0f172acc;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+#picker .modal{max-width:420px;padding:24px 22px}
+#picker h2{margin:6px 0 4px;font-size:24px}
+#picker .pk-sub{margin:0 0 16px;color:var(--muted);font-size:14px}
+.pk-opt{display:flex;align-items:center;gap:14px;width:100%;margin:0 0 10px;padding:14px 16px;border:1px solid var(--line);border-radius:18px;background:#fff;text-align:left;cursor:pointer;font:inherit;color:var(--ink);transition:transform .15s,box-shadow .15s,border-color .15s}
+.pk-opt:hover,.pk-opt:focus-visible{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 10px 22px #3157d51f;outline:none}
+.pk-opt:active{transform:scale(.98)}
+.pk-ic{font-size:30px;line-height:1}
+.pk-opt b{display:block;font-size:17px}
+.pk-opt small{color:var(--muted);font-size:12px}
+.pk-best{margin-left:auto;font-size:12px;font-weight:800;color:var(--accent);background:var(--accent2);padding:5px 9px;border-radius:999px;white-space:nowrap}
+.pk-cancel{margin-top:4px;border:0;background:transparent;color:var(--muted);font-weight:800;font-size:14px;padding:10px;cursor:pointer}
 </style>
 
 <style id="sjo-nav">
@@ -37,12 +52,13 @@ h1{font-size:21px;margin:0;letter-spacing:-.4px}.sub{font-size:12px;color:var(--
 padding:9px 12px;background:#111827;color:#fff;font:700 13px system-ui;border-radius:0 0 14px 14px;box-shadow:0 5px 18px #11182722}
 #sjoNav a{color:#fff;text-decoration:none;background:#ffffff18;border:1px solid #ffffff25;padding:7px 10px;border-radius:9px}
 </style>
+<link rel="stylesheet" href="sjo-ui.css"><script src="sjo-fx.js"></script>
 </head>
 <body><nav id="sjoNav"><span>🎮 SJO Games</span><a href="index.html">⌂ Games</a></nav>
 <div class="app">
 <header>
 <div class="brand"><div class="logo">🧩</div><div><h1>SJO Sudoku</h1><div class="sub">Focus. Solve. Repeat.</div></div></div>
-<button class="iconbtn" onclick="newGame()" title="New game">↻</button>
+<button class="iconbtn" onclick="openPicker(true)" title="New game">↻</button>
 </header>
 
 <section class="hero">
@@ -59,12 +75,20 @@ padding:9px 12px;background:#111827;color:#fff;font:700 13px system-ui;border-ra
 <button onclick="inputNum(6)">6</button><button onclick="inputNum(7)">7</button><button onclick="inputNum(8)">8</button><button onclick="inputNum(9)">9</button><button class="erase" onclick="inputNum(0)">⌫</button>
 </div>
 <div class="actions"><button class="check" onclick="checkBoard()">Check board</button><button class="hint" onclick="giveHint()">💡 Hint</button></div>
-<div class="bottom"><button onclick="clearSelected()">Clear</button><button onclick="newGame()">New puzzle</button></div>
+<div class="bottom"><button onclick="clearSelected()">Clear</button><button onclick="openPicker(true)">New puzzle</button></div>
 </section>
 </div>
 
-<div class="overlay" id="win"><div class="modal"><div class="trophy">🏆</div><h2>Puzzle solved!</h2><p id="winText"></p><button onclick="document.getElementById('win').style.display='none';newGame()">Play another</button></div></div>
+<div class="overlay" id="win"><div class="modal"><div class="trophy">🏆</div><h2>Puzzle solved!</h2><p id="winText"></p><button onclick="document.getElementById('win').style.display='none';openPicker(false)">Play another</button></div></div>
 
+
+<div class="overlay" id="picker"><div class="modal">
+<div class="trophy">🧩</div><h2>Choose difficulty</h2><p class="pk-sub">Pick a level to start your puzzle</p>
+<button class="pk-opt" data-d="easy"><span class="pk-ic">🟢</span><span><b>Easy</b><small>41 clues • relaxed</small></span><span class="pk-best" id="pkb-easy"></span></button>
+<button class="pk-opt" data-d="medium"><span class="pk-ic">🟡</span><span><b>Medium</b><small>33 clues • balanced</small></span><span class="pk-best" id="pkb-medium"></span></button>
+<button class="pk-opt" data-d="hard"><span class="pk-ic">🔴</span><span><b>Hard</b><small>27 clues • real challenge</small></span><span class="pk-best" id="pkb-hard"></span></button>
+<button class="pk-cancel" id="pkCancel" style="display:none">Cancel</button>
+</div></div>
 <script src="sjo-core.js"></script>
 <script>
 let solution=[],puzzle=[],board=[],selected=-1,difficulty='easy',mistakes=0,seconds=0,timer=null;
@@ -84,12 +108,33 @@ function win(){clearInterval(timer);let key='sjoBest_'+difficulty,b=localStorage
 function setDifficulty(v){difficulty=v;newGame()}
 function modeMsg(btn,msg){document.querySelectorAll('.modes button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('message').textContent=msg}
 document.addEventListener('keydown',e=>{if(e.key>='1'&&e.key<='9')inputNum(+e.key);if(e.key==='Backspace'||e.key==='0')inputNum(0)});
-newGame();
+
+/* ---- difficulty picker: ask Easy / Medium / Hard before every new game ---- */
+let pickerResume=false;
+function openPicker(canCancel){
+  pickerResume=!!canCancel&&puzzle.length>0&&!!timer;
+  if(pickerResume)clearInterval(timer);           // pause the running game while choosing
+  ['easy','medium','hard'].forEach(d=>{const b=localStorage.getItem('sjoBest_'+d);const el=document.getElementById('pkb-'+d);el.textContent=b?'🏆 '+fmt(+b):'';el.style.display=b?'':'none'});
+  document.getElementById('pkCancel').style.display=pickerResume?'block':'none';
+  document.getElementById('picker').style.display='flex';
+}
+function closePicker(){document.getElementById('picker').style.display='none'}
+function pickDifficulty(d){
+  difficulty=d;document.getElementById('difficulty').value=d;
+  pickerResume=false;closePicker();newGame();
+}
+document.querySelectorAll('.pk-opt').forEach(b=>b.addEventListener('click',()=>pickDifficulty(b.dataset.d)));
+document.getElementById('pkCancel').addEventListener('click',()=>{
+  closePicker();
+  if(pickerResume){timer=setInterval(()=>{seconds++;document.getElementById('time').textContent=fmt(seconds)},1000);pickerResume=false}
+});
+render();openPicker(false);
 </script>
 <script src="sjo-v7-enhancements.js"></script>
 <script src="sjo-v8-offline.js"></script>
 <script src="sjo-v9-advanced-offline.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="sjo-supabase-sync.js"></script>
+<script src="sjo-cloud-backup.js"></script>
 </body>
 </html>

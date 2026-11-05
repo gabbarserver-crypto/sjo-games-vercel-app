@@ -33,6 +33,20 @@
   var pushTimer = null;
   var pushing = false;
   var statusEl = null;
+  var lastErr = '';
+
+  function describe(e) {
+    var m = String((e && (e.message || e.error_description)) || e || '');
+    var c = String((e && (e.code || e.status)) || '');
+    try { console.error('[SJO backup]', e); } catch (_) {}
+    if (!navigator.onLine) return 'Offline — will retry when online';
+    if (c === '42P01' || c === 'PGRST205' || /does not exist|schema cache|relation/i.test(m))
+      return 'Backup table missing — run cloud_backup.sql in Supabase';
+    if (c === '401' || c === '403' || c === '42501' || /jwt|not authenticated|row-level security|permission denied/i.test(m))
+      return 'Not allowed — log out and log in again (or re-run cloud_backup.sql)';
+    if (/failed to fetch|network|load failed/i.test(m)) return 'Cannot reach Supabase — will retry';
+    return 'Backup failed: ' + m.slice(0, 80);
+  }
 
   function wanted(k) { return typeof k === 'string' && INCLUDE.test(k) && !EXCLUDE.test(k); }
 
@@ -122,6 +136,7 @@
       status('ok');
     } catch (e) {
       setMeta({ dirty: true });
+      lastErr = describe(e);
       status('error');
     } finally {
       pushing = false;
@@ -178,7 +193,7 @@
     if (!session) return;
     status('syncing');
     var res = await sb.from(TABLE).select('data,updated_at').eq('user_id', session.user.id).maybeSingle();
-    if (res.error) { status('error'); return; }
+    if (res.error) { lastErr = describe(res.error); status('error'); return; }
 
     var row = res.data;
     var m = getMeta();
@@ -258,7 +273,7 @@
     statusEl.className = kind === 'error' ? 'err' : (kind === 'syncing' || kind === 'restored' ? 'busy' : '');
     if (text) { statusEl.textContent = '☁️ ' + text; return; }
     if (kind === 'syncing') statusEl.textContent = '☁️ Syncing your progress…';
-    else if (kind === 'error') statusEl.textContent = '☁️ Backup pending — will retry when online';
+    else if (kind === 'error') statusEl.textContent = '☁️ ' + (lastErr || 'Backup pending — will retry when online') + ' (tap to retry)';
     else {
       var t = new Date();
       statusEl.textContent = '☁️ Auto backup ON • synced ' +
@@ -273,7 +288,7 @@
     if (!session) return;                          // sjo-supabase-sync.js sends them to auth.html
     sb.auth.onAuthStateChange(function (_e, ns) { if (ns) session = ns; });
 
-    try { await sync(true); } catch (e) { status('error'); }
+    try { await sync(true); } catch (e) { lastErr = describe(e); status('error'); }
 
     window.addEventListener('online', function () { sync(false); });
     document.addEventListener('visibilitychange', function () {
